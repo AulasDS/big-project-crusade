@@ -1,6 +1,6 @@
-const Jogo = require('../models/Jogo');
+const Biblioteca = require('../models/Biblioteca');
 
-class JogoController {
+class BibliotecaController {
     static async create(req, res) {
         try {
             const { iduser, idbiblioteca } = req.body;
@@ -9,55 +9,55 @@ class JogoController {
                 return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar iduser e idbiblioteca." });
             }
 
-            const clienteData = {
+            const BibliotecaData = {
                 iduser,
                 idbiblioteca
             };
 
-            const newJogo = await Jogo.create(clienteData);
-            return res.status(201).json({ message: 'Jogo criado com sucesso', data: newJogo });
+            const newBiblioteca = await Biblioteca.create(BibliotecaData);
+            return res.status(201).json({ message: 'Biblioteca criado com sucesso', data: newBiblioteca });
 
         } catch (error) {
-            return res.status(500).json({ message: 'Erro ao criar cliente', error: error.message });
+            return res.status(500).json({ message: 'Erro ao criar Biblioteca', error: error.message });
         }
     }
 
     static async getAll(req, res) {
         try {
-            const clientes = await Jogo.find();
-            return res.status(200).json({ data: clientes });
+            const Bibliotecas = await Biblioteca.find();
+            return res.status(200).json({ data: Bibliotecas });
         } catch (error) {
-            return res.status(500).json({ message: 'Erro ao encontrar clientes', error: error.message });
+            return res.status(500).json({ message: 'Erro ao encontrar Bibliotecas', error: error.message });
         }
     }
 
     static async getById(req, res) {
         try {
             const { id } = req.params;
-            const cliente = await Jogo.findById(id);
+            const Biblioteca = await Biblioteca.findById(id);
             
-            if (!cliente) {
-                return res.status(404).json({ message: 'Jogo não encontrado' });
+            if (!Biblioteca) {
+                return res.status(404).json({ message: 'Biblioteca não encontrado' });
             }
-            return res.status(200).json({ data: cliente });
+            return res.status(200).json({ data: Biblioteca });
         } catch (error) {
-            return res.status(500).json({ message: 'Erro ao encontrar cliente', error: error.message });
+            return res.status(500).json({ message: 'Erro ao encontrar Biblioteca', error: error.message });
         }
     }
 
     static async delete(req, res) {
         try {
             const { id } = req.params;
-            const deletedJogo = await Jogo.findByIdAndDelete(id);
+            const deletedBiblioteca = await Biblioteca.findByIdAndDelete(id);
             
-            if (!deletedJogo) {
-                return res.status(404).json({ message: 'Jogo não encontrado' });
+            if (!deletedBiblioteca) {
+                return res.status(404).json({ message: 'Biblioteca não encontrado' });
             }
-            return res.status(200).json({ message: 'Jogo deletado com sucesso' });
+            return res.status(200).json({ message: 'Biblioteca deletado com sucesso' });
         } catch (error) {
-            return res.status(500).json({ message: 'Erro ao deletar cliente', error: error.message });
+            return res.status(500).json({ message: 'Erro ao deletar Biblioteca', error: error.message });
         }
     }
 }
 
-module.exports = JogoController;
+module.exports = BibliotecaController;

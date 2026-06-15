@@ -22,7 +22,7 @@ export default function NavBar() {
                             <Link className={styles.navLink} to="/compras/">Compras</Link>
                         </li>
                         <li className={styles.navItem}>
-                            <Link className={styles.navLink} to="/">Biblioteca</Link>
+                            <Link className={styles.navLink} to="/Biblioteca/">Biblioteca</Link>
                         </li>
                     </ul>
                 </div>

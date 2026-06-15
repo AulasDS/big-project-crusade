@@ -24,7 +24,7 @@ class JogoController {
 
     static async getAll(req, res) {
         try {
-            const clientes = await Jogo.find();
+            const clientes = await Jogo.find().populate('iduser').populate('idbiblioteca');
             return res.status(200).json({ data: clientes });
         } catch (error) {
             return res.status(500).json({ message: 'Erro ao encontrar clientes', error: error.message });

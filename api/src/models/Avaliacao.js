@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Usuario = require('./Usuario');
 
 const Jogo = mongoose.model('Avaliacao', {
     usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },

@@ -118,7 +118,7 @@
   margin: 15px 0 25px 0;
 }
 
-/* GRIDS E COMPORTAMENTO DOS ENVELOPES (CARDS) */
+/* GRIDS E COMPORTAMENTO DOS CARDS (CORRIGIDO) */
 .gameGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -128,8 +128,12 @@
 .gameCard {
   aspect-ratio: 3 / 4;
   background-color: #2a475e;
-  background-size: cover;
-  background-position: center;
+  
+  /* PROPRIEDADES DE AJUSTE DA FOTO */
+  background-size: cover;       // Preenche o espaço cortando as sobras proporcionalmente
+  background-position: center;  // Mantém o enquadramento focado no meio da foto
+  background-repeat: no-repeat;
+  
   border-radius: 4px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
@@ -160,7 +164,7 @@
   }
 }
 
-/* COMPONENTE INTERNO DE BADGE DE TEMPO DE JOGO DE SUCESSO */
+/* COMPONENTE INTERNO DE BADGE DE TEMPO DE JOGO */
 .playtimeBadge {
   position: absolute;
   bottom: 0;

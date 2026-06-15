@@ -12,52 +12,52 @@ export interface Game {
   cover: string; 
 }
 
-// 2. Dados atualizados com links diretos para as imagens de capa
+// 2. Dados atualizados com os novos links e os jogos da sua preferência
 const gamesList: Game[] = [
   { 
     id: 1, 
     title: "Rocket League", 
-    genre: "RPG", 
+    genre: "Esporte, Corrida", 
     playtime: "108min", 
     lastPlayed: "Setembro", 
     achievementProgress: "4/5",
-    cover: "" 
+    cover: "/capas/rocket.png" 
   },
   { 
     id: 2, 
     title: "Subnautica", 
-    genre: "RPG", 
+    genre: "Sobrevivencia, Exploração, Aventura", 
     playtime: "12 h", 
     lastPlayed: "Setembro", 
     achievementProgress: "1/5",
-    cover: "https://images.tcdn.com.br/img/img_prod/461111/game_south_park_the_fractured_but_whole_ps4_midia_fisica_38363_1_ee6fa8a7ee4fb512965bfcdbc5480521.jpg"
+    cover: "/capas/subnautica.png"
   },
   { 
     id: 3, 
     title: "Celeste", 
-    genre: "Plataforma", 
+    genre: "Plataforma, Aventura", 
     playtime: "108 min", 
     lastPlayed: "Esta semana", 
     achievementProgress: "1/3",
-    cover: "https://upload.wikimedia.org/wikipedia/pt/f/f3/Celeste_capa.jpg"
+    cover: "/capas/celeste.png"
   },
   { 
     id: 4, 
-    title: "Deadlock", 
-    genre: "Battle Royale", 
+    title: "Cuphead", 
+    genre: "MOBA, Hero Shooter", 
     playtime: "512 h", 
     lastPlayed: "Setembro", 
     achievementProgress: "12/30",
-    cover: "https://upload.wikimedia.org/wikipedia/pt/7/70/PlayerUnknown%27s_Battlegrounds_capa.jpg"
+    cover: "/capas/cuphead.png"
   },
   { 
     id: 5, 
     title: "Forza Horizon 6", 
-    genre: "Competitivo", 
-    playtime: "2.450 h", 
+    genre: "Corrida, Mundo aberto", 
+    playtime: "250 h", 
     lastPlayed: "Agosto", 
     achievementProgress: "1/1",
-    cover: "https://upload.wikimedia.org/wikipedia/pt/e/e9/Counter-Strike_Global_Offensive_capa.jpg"
+    cover: "/capas/forza.png"
   },
   { 
     id: 6, 
@@ -66,52 +66,52 @@ const gamesList: Game[] = [
     playtime: "340 h", 
     lastPlayed: "Agosto", 
     achievementProgress: "2/3",
-    cover: "https://upload.wikimedia.org/wikipedia/pt/8/80/Grand_Theft_Auto_V_capa.png"
+    cover: "/capas/gta.png"
   },
   { 
     id: 7, 
     title: "Persona 3 Reload", 
-    genre: "Simulação", 
+    genre: "RPG", 
     playtime: "42 h", 
     lastPlayed: "Ontem", 
     achievementProgress: "2/3",
-    cover: "https://upload.wikimedia.org/wikipedia/pt/a/ab/Ace_Combat_7_Skies_Unknown_capa.jpg"
+    cover: "/capas/persona.png"
   },
   { 
     id: 8, 
-    title: "Type Son :sob:", 
+    title: "Counter Strike 2", 
     genre: "FPS", 
-    playtime: "Infinito", 
+    playtime: "3000 h", 
     lastPlayed: "Setembro", 
     achievementProgress: "1/2",
-    cover: "https://upload.wikimedia.org/wikipedia/pt/3/30/Battlefield_Bad_Company_2_capa.jpg"
+    cover: "/capas/cs.png"
   },
   { 
     id: 9, 
     title: "Dragon Ball FighterZ", 
-    genre: "Tiro", 
+    genre: "Ação, Luta", 
     playtime: "35 h", 
     lastPlayed: "Agosto", 
     achievementProgress: "2/2",
-    cover: "https://upload.wikimedia.org/wikipedia/pt/4/4e/Bioshock_Infinite_Capa.jpg"
+    cover: "/capas/db.png"
   },
   { 
     id: 10, 
     title: "Devil May Cry 5", 
-    genre: "Hack 'n Slash", 
+    genre: "Ação, Hack 'n Slash, Ação de Personagem", 
     playtime: "14 h", 
     lastPlayed: "Há meses", 
     achievementProgress: "1/2",
-    cover: "https://upload.wikimedia.org/wikipedia/pt/1/1a/Brutal_legend_capa.jpg"
+    cover: "/capas/dmc.png"
   },
   { 
     id: 11, 
     title: "The Forest", 
-    genre: "Simulação", 
+    genre: "Sobrevivencia, Exploração, Aventura", 
     playtime: "94 h", 
     lastPlayed: "Julho", 
     achievementProgress: "0/2",
-    cover: "https://upload.wikimedia.org/wikipedia/pt/4/42/Cities_Skylines_capa.jpg"
+    cover: "/capas/forest.png"
   }
 ];
 
@@ -155,9 +155,9 @@ export const Biblioteca: React.FC = () => {
               <div 
                 key={`recent-${game.id}`} 
                 className={styles.gameCard}
-                style={{ backgroundImage: `url(${game.cover})` }} // Injeta o link no plano de fundo
+                style={{ backgroundImage: `url(${game.cover})` }}
               >
-                {/* Badge de tempo de jogo exclusivo do South Park Stick of Truth */}
+                {/* Comentário HTML corrigido para não quebrar a aplicação */}
                 {game.id === 1 && (
                   <div className={styles.playtimeBadge}>
                     <button className={styles.miniPlayBtn}>▶</button>
@@ -192,7 +192,7 @@ export const Biblioteca: React.FC = () => {
               <div 
                 key={`all-${game.id}`} 
                 className={styles.gameCard}
-                style={{ backgroundImage: `url(${game.cover})` }} // Injeta o link no plano de fundo
+                style={{ backgroundImage: `url(${game.cover})` }}
               >
                 <span className={styles.cardTitle}>{game.title}</span>
               </div>

@@ -26,6 +26,8 @@ class BibliotecaController {
         try {
             const Bibliotecas = await Biblioteca.find();
             return res.status(200).json({ data: Bibliotecas });
+            const clientes = await Jogo.find().populate('iduser').populate('idbiblioteca');
+            return res.status(200).json({ data: clientes });
         } catch (error) {
             return res.status(500).json({ message: 'Erro ao encontrar Bibliotecas', error: error.message });
         }

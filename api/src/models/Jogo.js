@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Jogo = mongoose.model('Jogo', {
     titulo: String,
     descricao: String,
-    anoLancamento: Number,
+    anoLancamento: Date,
     preco: Number,
     tipo: String,
     genero: String,

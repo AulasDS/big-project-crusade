@@ -3,59 +3,70 @@ const Jogo = require('../models/Jogo');
 class JogoController {
     static async create(req, res) {
         try {
-            const { titulo, descricao, nascimento, senha } = req.body;
+            const { titulo, descricao, anoLancamento, preco, tipo, genero, plataforma, desenvolvedora, publicadora } = req.body;
             
-            if (!titulo || !descricao || !nascimento || !senha) {
-                return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar titulo, descricao e nascimento." });
+            if (!titulo || !descricao || !anoLancamento || !preco || !tipo || !genero || !plataforma || !desenvolvedora || !publicadora) {
+                return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar titulo, descricao e anoLancamento." });
             }
 
-            const clienteData = {
+            const jogoData = {
                 titulo,
                 descricao,
-                nascimento,
-                senha
+                anoLancamento,
+                preco,
+                tipo,
+                genero,
+                plataforma,
+                desenvolvedora,
+                publicadora
             };
 
-            const newJogo = await Jogo.create(clienteData);
+            const newJogo = await Jogo.create(jogoData);
             return res.status(201).json({ message: 'Jogo criado com sucesso', data: newJogo });
 
         } catch (error) {
-            return res.status(500).json({ message: 'Erro ao criar cliente', error: error.message });
+            return res.status(500).json({ message: 'Erro ao criar jogo', error: error.message });
         }
     }
 
     static async getAll(req, res) {
         try {
-            const clientes = await Jogo.find();
-            return res.status(200).json({ data: clientes });
+            const jogo = await Jogo.find();
+            return res.status(200).json({ data: jogo });
         } catch (error) {
-            return res.status(500).json({ message: 'Erro ao encontrar clientes', error: error.message });
+            return res.status(500).json({ message: 'Erro ao encontrar jogo', error: error.message });
         }
     }
 
     static async getById(req, res) {
         try {
             const { id } = req.params;
-            const cliente = await Jogo.findById(id);
+            const jogo = await Jogo.findById(id);
             
-            if (!cliente) {
+            if (!jogo) {
                 return res.status(404).json({ message: 'Jogo não encontrado' });
             }
-            return res.status(200).json({ data: cliente });
+            return res.status(200).json({ data: jogo });
         } catch (error) {
-            return res.status(500).json({ message: 'Erro ao encontrar cliente', error: error.message });
+            return res.status(500).json({ message: 'Erro ao encontrar jogo', error: error.message });
         }
     }
 
     static async update(req, res) {
         try {
             const { id } = req.params;
-            const { titulo, descricao, nascimento } = req.body;
+            const { titulo, descricao, anoLancamento, preco, tipo, genero, plataforma, desenvolvedora, publicadora } = req.body;
             
             const updatedData = {
                 titulo,
                 descricao,
-                nascimento
+                anoLancamento,
+                preco,
+                tipo,
+                genero,
+                plataforma,
+                desenvolvedora,
+                publicadora
             };
             
             const updatedJogo = await Jogo.findByIdAndUpdate(id, updatedData, { new: true });
@@ -65,7 +76,7 @@ class JogoController {
             }
             return res.status(200).json({ message: 'Jogo atualizado com sucesso', data: updatedJogo });
         } catch (error) {
-            return res.status(500).json({ message: 'Erro ao atualizar cliente', error: error.message });
+            return res.status(500).json({ message: 'Erro ao atualizar jogo', error: error.message });
         }
     }
 
@@ -79,7 +90,7 @@ class JogoController {
             }
             return res.status(200).json({ message: 'Jogo deletado com sucesso' });
         } catch (error) {
-            return res.status(500).json({ message: 'Erro ao deletar cliente', error: error.message });
+            return res.status(500).json({ message: 'Erro ao deletar jogo', error: error.message });
         }
     }
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './style.module.scss';
 
-// 1. Definição Unificada da Interface do Jogo
+// 1. Interface com o campo 'cover' obrigatório para as URLs das imagens
 export interface Game {
   id: number;
   title: string;
@@ -9,39 +9,126 @@ export interface Game {
   playtime: string;
   lastPlayed: string;
   achievementProgress: string;
-  cover?: string;
+  cover: string; 
 }
 
-// 2. Dados Reais Extraídos do seu Acervo da Steam
+// 2. Dados atualizados com links diretos para as imagens de capa
 const gamesList: Game[] = [
-  { id: 1, title: "South Park: The Stick of Truth", genre: "RPG", playtime: "108min", lastPlayed: "Setembro", achievementProgress: "4/5" },
-  { id: 2, title: "South Park: The Fractured But Whole", genre: "RPG", playtime: "12 h", lastPlayed: "Setembro", achievementProgress: "1/5" },
-  { id: 3, title: "Celeste", genre: "Plataforma", playtime: "108 min", lastPlayed: "Esta semana", achievementProgress: "1/3" },
-  { id: 4, title: "PUBG: BATTLEGROUNDS", genre: "Battle Royale", playtime: "512 h", lastPlayed: "Setembro", achievementProgress: "12/30" },
-  { id: 5, title: "Counter-Strike: Global Offensive", genre: "Competitivo", playtime: "2.450 h", lastPlayed: "Agosto", achievementProgress: "1/1" },
-  { id: 6, title: "Grand Theft Auto V", genre: "Mundo Aberto", playtime: "340 h", lastPlayed: "Agosto", achievementProgress: "2/3" },
-  { id: 7, title: "ACE COMBAT™ 7: SKIES UNKNOWN", genre: "Simulação", playtime: "42 h", lastPlayed: "Ontem", achievementProgress: "2/3" },
-  { id: 8, title: "Battlefield: Bad Company 2", genre: "FPS", playtime: "118 h", lastPlayed: "Setembro", achievementProgress: "1/2" },
-  { id: 9, title: "BioShock Infinite", genre: "Tiro", playtime: "35 h", lastPlayed: "Agosto", achievementProgress: "2/2" },
-  { id: 10, title: "Brütal Legend", genre: "Hack 'n Slash", playtime: "14 h", lastPlayed: "Há meses", achievementProgress: "1/2" },
-  { id: 11, title: "Cities: Skylines", genre: "Simulação", playtime: "94 h", lastPlayed: "Julho", achievementProgress: "0/2" }
+  { 
+    id: 1, 
+    title: "Rocket League", 
+    genre: "RPG", 
+    playtime: "108min", 
+    lastPlayed: "Setembro", 
+    achievementProgress: "4/5",
+    cover: "" 
+  },
+  { 
+    id: 2, 
+    title: "Subnautica", 
+    genre: "RPG", 
+    playtime: "12 h", 
+    lastPlayed: "Setembro", 
+    achievementProgress: "1/5",
+    cover: "https://images.tcdn.com.br/img/img_prod/461111/game_south_park_the_fractured_but_whole_ps4_midia_fisica_38363_1_ee6fa8a7ee4fb512965bfcdbc5480521.jpg"
+  },
+  { 
+    id: 3, 
+    title: "Celeste", 
+    genre: "Plataforma", 
+    playtime: "108 min", 
+    lastPlayed: "Esta semana", 
+    achievementProgress: "1/3",
+    cover: "https://upload.wikimedia.org/wikipedia/pt/f/f3/Celeste_capa.jpg"
+  },
+  { 
+    id: 4, 
+    title: "Deadlock", 
+    genre: "Battle Royale", 
+    playtime: "512 h", 
+    lastPlayed: "Setembro", 
+    achievementProgress: "12/30",
+    cover: "https://upload.wikimedia.org/wikipedia/pt/7/70/PlayerUnknown%27s_Battlegrounds_capa.jpg"
+  },
+  { 
+    id: 5, 
+    title: "Forza Horizon 6", 
+    genre: "Competitivo", 
+    playtime: "2.450 h", 
+    lastPlayed: "Agosto", 
+    achievementProgress: "1/1",
+    cover: "https://upload.wikimedia.org/wikipedia/pt/e/e9/Counter-Strike_Global_Offensive_capa.jpg"
+  },
+  { 
+    id: 6, 
+    title: "Grand Theft Auto V", 
+    genre: "Mundo Aberto", 
+    playtime: "340 h", 
+    lastPlayed: "Agosto", 
+    achievementProgress: "2/3",
+    cover: "https://upload.wikimedia.org/wikipedia/pt/8/80/Grand_Theft_Auto_V_capa.png"
+  },
+  { 
+    id: 7, 
+    title: "Persona 3 Reload", 
+    genre: "Simulação", 
+    playtime: "42 h", 
+    lastPlayed: "Ontem", 
+    achievementProgress: "2/3",
+    cover: "https://upload.wikimedia.org/wikipedia/pt/a/ab/Ace_Combat_7_Skies_Unknown_capa.jpg"
+  },
+  { 
+    id: 8, 
+    title: "Type Son :sob:", 
+    genre: "FPS", 
+    playtime: "Infinito", 
+    lastPlayed: "Setembro", 
+    achievementProgress: "1/2",
+    cover: "https://upload.wikimedia.org/wikipedia/pt/3/30/Battlefield_Bad_Company_2_capa.jpg"
+  },
+  { 
+    id: 9, 
+    title: "Dragon Ball FighterZ", 
+    genre: "Tiro", 
+    playtime: "35 h", 
+    lastPlayed: "Agosto", 
+    achievementProgress: "2/2",
+    cover: "https://upload.wikimedia.org/wikipedia/pt/4/4e/Bioshock_Infinite_Capa.jpg"
+  },
+  { 
+    id: 10, 
+    title: "Devil May Cry 5", 
+    genre: "Hack 'n Slash", 
+    playtime: "14 h", 
+    lastPlayed: "Há meses", 
+    achievementProgress: "1/2",
+    cover: "https://upload.wikimedia.org/wikipedia/pt/1/1a/Brutal_legend_capa.jpg"
+  },
+  { 
+    id: 11, 
+    title: "The Forest", 
+    genre: "Simulação", 
+    playtime: "94 h", 
+    lastPlayed: "Julho", 
+    achievementProgress: "0/2",
+    cover: "https://upload.wikimedia.org/wikipedia/pt/4/42/Cities_Skylines_capa.jpg"
+  }
 ];
 
 export const Biblioteca: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Filtro de pesquisa acoplado à listagem geral
   const filteredGames = gamesList.filter(game =>
     game.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Mapeia os 6 primeiros para exibição em destaque na prateleira de recentes
+  // Pega os 6 primeiros da lista para a prateleira de recentes
   const recentGames = gamesList.slice(0, 6);
 
   return (
     <div className={styles.libraryPageWrapper}>
       
-      {/* Menu Interno de Sub-Navegação da Biblioteca */}
+      {/* Menu Interno da Biblioteca */}
       <nav className={styles.innerNav}>
         <div className={styles.navLinks}>
           <button className={`${styles.navBtn} ${styles.active}`}>PÁGINA INICIAL</button>
@@ -65,8 +152,12 @@ export const Biblioteca: React.FC = () => {
           </h2>
           <div className={styles.gameGrid}>
             {recentGames.map(game => (
-              <div key={`recent-${game.id}`} className={styles.gameCard}>
-                {/* Exibe o overlay de tempo de jogo se for o South Park Stick of Truth (ID 1) */}
+              <div 
+                key={`recent-${game.id}`} 
+                className={styles.gameCard}
+                style={{ backgroundImage: `url(${game.cover})` }} // Injeta o link no plano de fundo
+              >
+                {/* Badge de tempo de jogo exclusivo do South Park Stick of Truth */}
                 {game.id === 1 && (
                   <div className={styles.playtimeBadge}>
                     <button className={styles.miniPlayBtn}>▶</button>
@@ -98,7 +189,11 @@ export const Biblioteca: React.FC = () => {
           
           <div className={styles.gameGrid}>
             {filteredGames.map(game => (
-              <div key={`all-${game.id}`} className={styles.gameCard}>
+              <div 
+                key={`all-${game.id}`} 
+                className={styles.gameCard}
+                style={{ backgroundImage: `url(${game.cover})` }} // Injeta o link no plano de fundo
+              >
                 <span className={styles.cardTitle}>{game.title}</span>
               </div>
             ))}

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // Importação necessária para o roteamento
 import styles from './style.module.scss';
 
-// 1. Interface com o campo 'cover' obrigatório para as URLs das imagens
+// Interface com o campo 'cover' e 'path' obrigatórios
 export interface Game {
   id: number;
   title: string;
@@ -10,9 +11,10 @@ export interface Game {
   lastPlayed: string;
   achievementProgress: string;
   cover: string; 
+  path: string; // Caminho da página interna do jogo
 }
 
-// 2. Dados atualizados com os novos links e os jogos da sua preferência
+// Dados com os paths alinhados PERFEITAMENTE com o seu App.tsx
 const gamesList: Game[] = [
   { 
     id: 1, 
@@ -21,7 +23,8 @@ const gamesList: Game[] = [
     playtime: "108min", 
     lastPlayed: "Setembro", 
     achievementProgress: "4/5",
-    cover: "/capas/rocket.png" 
+    cover: "/capas/rocket.png",
+    path: "/Rocket"
   },
   { 
     id: 2, 
@@ -30,7 +33,8 @@ const gamesList: Game[] = [
     playtime: "12 h", 
     lastPlayed: "Setembro", 
     achievementProgress: "1/5",
-    cover: "/capas/subnautica.png"
+    cover: "/capas/subnautica.png",
+    path: "/Subnautica"
   },
   { 
     id: 3, 
@@ -39,7 +43,8 @@ const gamesList: Game[] = [
     playtime: "108 min", 
     lastPlayed: "Esta semana", 
     achievementProgress: "1/3",
-    cover: "/capas/celeste.png"
+    cover: "/capas/celeste.png",
+    path: "/Celeste"
   },
   { 
     id: 4, 
@@ -48,7 +53,8 @@ const gamesList: Game[] = [
     playtime: "512 h", 
     lastPlayed: "Setembro", 
     achievementProgress: "12/30",
-    cover: "/capas/cuphead.png"
+    cover: "/capas/cuphead.png",
+    path: "/Cuphead"
   },
   { 
     id: 5, 
@@ -57,7 +63,8 @@ const gamesList: Game[] = [
     playtime: "250 h", 
     lastPlayed: "Agosto", 
     achievementProgress: "1/1",
-    cover: "/capas/forza.png"
+    cover: "/capas/forza.png",
+    path: "/Forza"
   },
   { 
     id: 6, 
@@ -66,7 +73,8 @@ const gamesList: Game[] = [
     playtime: "340 h", 
     lastPlayed: "Agosto", 
     achievementProgress: "2/3",
-    cover: "/capas/gta.png"
+    cover: "/capas/gta.png",
+    path: "/Gta"
   },
   { 
     id: 7, 
@@ -75,7 +83,8 @@ const gamesList: Game[] = [
     playtime: "42 h", 
     lastPlayed: "Ontem", 
     achievementProgress: "2/3",
-    cover: "/capas/persona.png"
+    cover: "/capas/persona.png",
+    path: "/Persona3"
   },
   { 
     id: 8, 
@@ -84,7 +93,8 @@ const gamesList: Game[] = [
     playtime: "3000 h", 
     lastPlayed: "Setembro", 
     achievementProgress: "1/2",
-    cover: "/capas/cs.png"
+    cover: "/capas/cs.png",
+    path: "/Cs2"
   },
   { 
     id: 9, 
@@ -93,7 +103,8 @@ const gamesList: Game[] = [
     playtime: "35 h", 
     lastPlayed: "Agosto", 
     achievementProgress: "2/2",
-    cover: "/capas/db.png"
+    cover: "/capas/db.png",
+    path: "/Dbfz"
   },
   { 
     id: 10, 
@@ -102,7 +113,8 @@ const gamesList: Game[] = [
     playtime: "14 h", 
     lastPlayed: "Há meses", 
     achievementProgress: "1/2",
-    cover: "/capas/dmc.png"
+    cover: "/capas/dmc.png",
+    path: "/Dmc5"
   },
   { 
     id: 11, 
@@ -111,7 +123,8 @@ const gamesList: Game[] = [
     playtime: "94 h", 
     lastPlayed: "Julho", 
     achievementProgress: "0/2",
-    cover: "/capas/forest.png"
+    cover: "/capas/forest.png",
+    path: "/TheForest"
   }
 ];
 
@@ -122,13 +135,11 @@ export const Biblioteca: React.FC = () => {
     game.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Pega os 6 primeiros da lista para a prateleira de recentes
   const recentGames = gamesList.slice(0, 6);
 
   return (
     <div className={styles.libraryPageWrapper}>
       
-      {/* Menu Interno da Biblioteca */}
       <nav className={styles.innerNav}>
         <div className={styles.navLinks}>
           <button className={`${styles.navBtn} ${styles.active}`}>PÁGINA INICIAL</button>
@@ -152,12 +163,12 @@ export const Biblioteca: React.FC = () => {
           </h2>
           <div className={styles.gameGrid}>
             {recentGames.map(game => (
-              <div 
+              <Link 
+                to={game.path} 
                 key={`recent-${game.id}`} 
                 className={styles.gameCard}
                 style={{ backgroundImage: `url(${game.cover})` }}
               >
-                {/* Comentário HTML corrigido para não quebrar a aplicação */}
                 {game.id === 1 && (
                   <div className={styles.playtimeBadge}>
                     <button className={styles.miniPlayBtn}>▶</button>
@@ -168,7 +179,7 @@ export const Biblioteca: React.FC = () => {
                   </div>
                 )}
                 <span className={styles.cardTitle}>{game.title}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -189,13 +200,14 @@ export const Biblioteca: React.FC = () => {
           
           <div className={styles.gameGrid}>
             {filteredGames.map(game => (
-              <div 
+              <Link 
+                to={game.path} 
                 key={`all-${game.id}`} 
                 className={styles.gameCard}
                 style={{ backgroundImage: `url(${game.cover})` }}
               >
                 <span className={styles.cardTitle}>{game.title}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </section>

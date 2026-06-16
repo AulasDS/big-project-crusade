@@ -10,6 +10,7 @@ import InserirCompra from './pages/InserirCompra';
 import InserirCliente from './pages/InserirClientes';
 import Clientes from './pages/Clientes';
 import Biblioteca from './pages/Biblioteca';
+import Rocket from './pages/Jogos/Rocket';
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
         <Route path='/clientes/' element={<Clientes />} />
         <Route path='/inserir-cliente/' element={<InserirCliente />} />
         <Route path='/Biblioteca/' element={<Biblioteca />} />
+        <Route path='/Rocket/' element={<Rocket/>} />
       </Routes>
     </>
   )

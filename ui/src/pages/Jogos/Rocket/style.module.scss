@@ -1,0 +1,116 @@
+.gamePageContainer {
+  background-color: #1b2838; // Cor clássica de fundo da Steam
+  color: #fff;
+  min-height: 100vh;
+  font-family: 'Motiva Sans', Arial, sans-serif;
+}
+
+.backButton {
+  display: inline-block;
+  padding: 15px;
+  color: #66c0f4;
+  text-decoration: none;
+  font-size: 12px;
+  &:hover { color: #fff; }
+}
+
+.heroBanner {
+  height: 350px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #1b2838 100%), 
+              url('/capas/rocket_banner.jpg') center/cover; // Certifique-se de ter essa imagem
+  display: flex;
+  align-items: flex-end;
+  padding: 40px;
+
+  .gameTitle { font-size: 56px; margin: 0; text-transform: uppercase; }
+  .gameStatus { color: #8f98a0; font-size: 14px; }
+}
+
+.actionBar {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .leftActions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .playButton {
+    background: linear-gradient(to right, #75b022, #588a1b);
+    border: none;
+    color: white;
+    padding: 12px 60px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 2px;
+    &:hover { background: #8ed629; }
+  }
+
+  .playtimeInfo {
+    display: flex;
+    flex-direction: column;
+    span { color: #8f98a0; font-size: 11px; }
+    strong { font-size: 14px; }
+  }
+
+  .actionIcons button {
+    background: #3d4450;
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    margin-left: 5px;
+    cursor: pointer;
+    &:hover { background: #67707b; }
+  }
+}
+
+.gameNav {
+  padding: 10px 40px;
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  gap: 20px;
+  color: #8f98a0;
+  font-size: 13px;
+  span { cursor: pointer; &:hover { color: #fff; } }
+  .active { color: #fff; border-bottom: 2px solid #1a9fff; padding-bottom: 5px; }
+}
+
+.mainLayout {
+  display: flex;
+  padding: 30px 40px;
+  gap: 40px;
+
+  .contentArea {
+    flex: 3;
+    .eventBox {
+      background: #10161d;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      color: #8f98a0;
+    }
+  }
+
+  .sidebar {
+    flex: 1;
+    h3 { font-size: 14px; color: #8f98a0; }
+    .friendSummary { font-size: 12px; color: #54a5d4; }
+    
+    .friendItem {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      .avatarPlaceholder { width: 34px; height: 34px; background: #3d4450; border-radius: 2px; }
+      strong { display: block; font-size: 13px; color: #66c0f4; }
+      span { font-size: 11px; color: #8f98a0; }
+    }
+  }
+}

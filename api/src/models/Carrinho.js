@@ -1,6 +1,20 @@
 const mongoose = require('mongoose');
 
-const Carrinho = mongoose.model('Carrinho', {
-    usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
-      jogos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Jogo' }]
+const CarrinhoSchema = new mongoose.Schema({
+
+    usuario: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: true
+    },
+
+    jogos: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Jogo'
+        }
+    ]
+
 });
+
+module.exports = mongoose.model('Carrinho', CarrinhoSchema);

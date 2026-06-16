@@ -5,27 +5,37 @@ export default function NavBar() {
     return (
         <nav className={styles.navbar}>
             <div className={styles.container}>
-                <Link to="/" className={styles.logo}>
-                    Game Store
+
+                <Link to="/loja" className={styles.logo}>
+                    Steam
                 </Link>
 
-                {/* Links de Navegação */}
                 <div className={styles.menu}>
-                    <ul className={styles.navList}>
-                        <li className={styles.navItem}>
-                            <Link className={styles.navLink} to="/">Home</Link>
-                        </li>
-                        <li className={styles.navItem}>
-                            <Link className={styles.navLink} to="/produtos/">Produtos</Link>
-                        </li>
-                        <li className={styles.navItem}>
-                            <Link className={styles.navLink} to="/compras/">Compras</Link>
-                        </li>
-                        <li className={styles.navItem}>
-                            <Link className={styles.navLink} to="/Biblioteca/">Biblioteca</Link>
-                        </li>
-                    </ul>
+                    <Link 
+                        to="/loja" 
+                        className={styles.navLink}
+                    >
+                        Loja
+                    </Link>
+
+                    <Link 
+                        to="/Biblioteca" 
+                        className={styles.navLink}
+                    >
+                        Biblioteca
+                    </Link>
                 </div>
+
+
+                <div className={styles.profile}>
+                    <Link 
+                        to="/perfil" 
+                        className={styles.profileLink}
+                    >
+                        Perfil
+                    </Link>
+                </div>
+
             </div>
         </nav>
     );

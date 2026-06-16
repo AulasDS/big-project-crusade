@@ -32,20 +32,32 @@ class BibliotecaController {
     }
 
     static async getById(req, res) {
-        try {
-            const { id } = req.params;
-            const Biblioteca = await Biblioteca.findById(id);
-            
-            if (!Biblioteca) {
-                return res.status(404).json({ message: 'Biblioteca não encontrado' });
-            }
-            return res.status(200).json({ data: Biblioteca });
-        } catch (error) {
-            return res.status(500).json({ message: 'Erro ao encontrar Biblioteca', error: error.message });
-        }
-    }
+    try {
+        const { id } = req.params;
 
-   static async update(req, res) {
+        const biblioteca = await Biblioteca.findOne({ usuario: id })
+            .populate('usuario')
+            .populate('jogos');
+
+        if (!biblioteca) {
+            return res.status(404).json({ 
+                message: 'Biblioteca não encontrada'
+            });
+        }
+
+        return res.status(200).json({ 
+            data: biblioteca 
+        });
+
+    } catch (error) {
+        return res.status(500).json({ 
+            message: 'Erro ao encontrar Biblioteca', 
+            error: error.message 
+        });
+    }
+}
+
+ static async update(req, res) {
     try {
         const { id } = req.params;
         const { idjogo } = req.body;
@@ -63,7 +75,9 @@ class BibliotecaController {
                     jogos: idjogo
                 }
             },
-            { new: true }
+            { 
+                returnDocument: 'after' 
+            }
         );
 
         if (!updatedBiblioteca) {
@@ -73,11 +87,11 @@ class BibliotecaController {
         }
 
         return res.status(200).json({
-            message: 'Jogo adicionado à biblioteca',
+            message: 'Jogo adicionado à biblioteca com sucesso',
             data: updatedBiblioteca
         });
 
-    } catch(error) {
+    } catch (error) {
         return res.status(500).json({
             message: 'Erro ao atualizar biblioteca',
             error: error.message
@@ -87,6 +101,8 @@ class BibliotecaController {
 
     static async delete(req, res) {
         try {
+            console.log("PARAMS:", req.params);
+            console.log("BODY:", req.body);
             const { id } = req.params;
             const deletedBiblioteca = await Biblioteca.findByIdAndDelete(id);
             

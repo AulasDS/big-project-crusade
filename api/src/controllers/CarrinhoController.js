@@ -3,15 +3,15 @@ const Carrinho = require('../models/Carrinho');
 class CarrinhoController {
     static async create(req, res) {
         try {
-            const { iduser, idbiblioteca } = req.body;
+            const { iduser, idjogo } = req.body;
 
-            if (!iduser || !idbiblioteca) {
-                return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar iduser e idbiblioteca." });
+            if (!iduser || !idjogo) {
+                return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar iduser e idjogo." });
             }
 
             const CarrinhoData = {
-                iduser,
-                idbiblioteca
+                usuario: iduser,
+                jogos: [idjogo]
             };
 
             const newCarrinho = await Carrinho.create(CarrinhoData);
@@ -24,7 +24,7 @@ class CarrinhoController {
 
     static async getAll(req, res) {
         try {
-            const Carrinhos = await Carrinho.find();
+            const Carrinhos = await Carrinho.find().populate('usuario').populate('jogos');
             return res.status(200).json({ data: Carrinhos });
         } catch (error) {
             return res.status(500).json({ message: 'Erro ao encontrar Carrinhos', error: error.message });
@@ -32,21 +32,77 @@ class CarrinhoController {
     }
 
     static async getById(req, res) {
-        try {
-            const { id } = req.params;
-            const Carrinho = await Carrinho.findById(id);
-            
-            if (!Carrinho) {
-                return res.status(404).json({ message: 'Carrinho não encontrado' });
-            }
-            return res.status(200).json({ data: Carrinho });
-        } catch (error) {
-            return res.status(500).json({ message: 'Erro ao encontrar Carrinho', error: error.message });
+    try {
+        const { id } = req.params;
+
+        const carrinho = await Carrinho.findOne({ usuario: id })
+            .populate('usuario')
+            .populate('jogos');
+
+        if (!carrinho) {
+            return res.status(404).json({ 
+                message: 'Carrinho não encontrada'
+            });
         }
+
+        return res.status(200).json({ 
+            data: carrinho 
+        });
+
+    } catch (error) {
+        return res.status(500).json({ 
+            message: 'Erro ao encontrar Carrinho', 
+            error: error.message 
+        });
     }
+}
+
+ static async update(req, res) {
+    try {
+        const { id } = req.params;
+        const { idjogo } = req.body;
+
+        if (!idjogo) {
+            return res.status(400).json({
+                message: "Envie o id do jogo."
+            });
+        }
+
+        const updatedCarrinho = await Carrinho.findByIdAndUpdate(
+            id,
+            {
+                $addToSet: {
+                    jogos: idjogo
+                }
+            },
+            { 
+                returnDocument: 'after' 
+            }
+        );
+
+        if (!updatedCarrinho) {
+            return res.status(404).json({
+                message: 'Carrinho não encontrada'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Jogo adicionado à carrinho com sucesso',
+            data: updatedCarrinho
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Erro ao atualizar carrinho',
+            error: error.message
+        });
+    }
+}
 
     static async delete(req, res) {
         try {
+            console.log("PARAMS:", req.params);
+            console.log("BODY:", req.body);
             const { id } = req.params;
             const deletedCarrinho = await Carrinho.findByIdAndDelete(id);
             

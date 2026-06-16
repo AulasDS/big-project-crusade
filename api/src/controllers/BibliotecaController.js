@@ -11,7 +11,7 @@ class BibliotecaController {
 
             const BibliotecaData = {
                 usuario: iduser,
-                jogos: idjogo
+                jogos: [idjogo]
             };
 
             const newBiblioteca = await Biblioteca.create(BibliotecaData);
@@ -45,30 +45,45 @@ class BibliotecaController {
         }
     }
 
-    static async update(req, res) {
-        try {
-            const { id } = req.params;
-            const { iduser, idjogo } = req.body;
+   static async update(req, res) {
+    try {
+        const { id } = req.params;
+        const { idjogo } = req.body;
 
-            if (!iduser || !idjogo) {
-                return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar iduser e idjogo." });
-            }
-
-            const BibliotecaData = {
-                usuario: iduser,
-                jogos: idjogo
-            };
-
-            const updatedBiblioteca = await Biblioteca.findByIdAndUpdate(id, BibliotecaData, { new: true });
-            
-            if (!updatedBiblioteca) {
-                return res.status(404).json({ message: 'Biblioteca não encontrado' });
-            }
-            return res.status(200).json({ message: 'Biblioteca atualizado com sucesso', data: updatedBiblioteca });
-        } catch (error) {
-            return res.status(500).json({ message: 'Erro ao atualizar Biblioteca', error: error.message });
+        if (!idjogo) {
+            return res.status(400).json({
+                message: "Envie o id do jogo."
+            });
         }
+
+        const updatedBiblioteca = await Biblioteca.findByIdAndUpdate(
+            id,
+            {
+                $addToSet: {
+                    jogos: idjogo
+                }
+            },
+            { new: true }
+        );
+
+        if (!updatedBiblioteca) {
+            return res.status(404).json({
+                message: 'Biblioteca não encontrada'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Jogo adicionado à biblioteca',
+            data: updatedBiblioteca
+        });
+
+    } catch(error) {
+        return res.status(500).json({
+            message: 'Erro ao atualizar biblioteca',
+            error: error.message
+        });
     }
+}
 
     static async delete(req, res) {
         try {

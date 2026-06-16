@@ -1,7 +1,20 @@
 const mongoose = require('mongoose');
 
-const Biblioteca = mongoose.model('Biblioteca', {
-    usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
-    jogos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Jogo' }]
+const BibliotecaSchema = new mongoose.Schema({
+
+    usuario: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: true
+    },
+
+    jogos: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Jogo'
+        }
+    ]
+
 });
-module.exports = Biblioteca;
+
+module.exports = mongoose.model('Biblioteca', BibliotecaSchema);

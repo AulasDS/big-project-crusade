@@ -6,13 +6,13 @@ export default function NavBar() {
         <nav className={styles.navbar}>
             <div className={styles.container}>
 
-                <Link to="/loja" className={styles.logo}>
+                <Link to="/Home" className={styles.logo}>
                     Steam
                 </Link>
 
                 <div className={styles.menu}>
                     <Link 
-                        to="/loja" 
+                        to="/Home" 
                         className={styles.navLink}
                     >
                         Loja

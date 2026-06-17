@@ -30,11 +30,15 @@ export default function NavBar() {
     return (
         <nav className={styles.navbar}>
             <div className={styles.container}>
-                
+
+                <Link to="/Home" className={styles.logo}>
+                    Steam
+                </Link>
+
                 <div className={styles.menu}>
                     <Link 
-                        to="/" 
-                        className={`${styles.navLink} ${location.pathname === '/' ? styles.active : ''}`}
+                        to="/Home" 
+                        className={styles.navLink}
                     >
                         LOJA
                     </Link>

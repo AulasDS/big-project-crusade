@@ -11,6 +11,7 @@ import InserirCliente from './pages/InserirClientes';
 import Clientes from './pages/Clientes';
 import Biblioteca from './pages/Biblioteca';
 import Rocket from './pages/Jogos/Rocket';
+import Carrinho from './pages/Carrinho';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
         <Route path='/inserir-cliente/' element={<InserirCliente />} />
         <Route path='/Biblioteca/' element={<Biblioteca />} />
         <Route path='/Rocket/' element={<Rocket/>} />
+        <Route path='/Carrinho/' element={<Carrinho/>} />
       </Routes>
     </>
   )

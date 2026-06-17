@@ -9,6 +9,8 @@ const Jogo = mongoose.model('Jogo', {
     genero: String,
     plataforma: String,
     desenvolvedora: String,
-    publicadora: String
+    publicadora: String,
+    cover: String 
 });
+
 module.exports = Jogo;

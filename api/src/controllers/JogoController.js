@@ -1,33 +1,39 @@
 const Jogo = require('../models/Jogo');
 
 class JogoController {
-    static async create(req, res) {
-        try {
-            const { titulo, descricao, anoLancamento, preco, tipo, genero, plataforma, desenvolvedora, publicadora } = req.body;
-            
-            if (!titulo || !descricao || !anoLancamento || !preco || !tipo || !genero || !plataforma || !desenvolvedora || !publicadora) {
-                return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar titulo, descricao e anoLancamento." });
-            }
+    // Dentro do JogoController.js:
+static async create(req, res) {
+    try {
+        // 1. Pegue o 'cover' de dentro do req.body
+        const { titulo, descricao, anoLancamento, preco, tipo, genero, plataforma, desenvolvedora, publicadora, cover } = req.body;
 
-            const jogoData = {
-                titulo,
-                descricao,
-                anoLancamento,
-                preco,
-                tipo,
-                genero,
-                plataforma,
-                desenvolvedora,
-                publicadora
-            };
-
-            const newJogo = await Jogo.create(jogoData);
-            return res.status(201).json({ message: 'Jogo criado com sucesso', data: newJogo });
-
-        } catch (error) {
-            return res.status(500).json({ message: 'Erro ao criar jogo', error: error.message });
+        // 2. Se quiser que a foto seja obrigatória, coloque !cover no if:
+        if (!titulo || !descricao || !anoLancamento || !cover) {
+            return res.status(400).json({ 
+                message: "Dados inválidos. Certifique-se de enviar titulo, descricao, anoLancamento e cover." 
+            });
         }
+
+        const novoJogoData = {
+            titulo,
+            descricao,
+            anoLancamento,
+            preco,
+            tipo,
+            genero,
+            plataforma,
+            desenvolvedora,
+            publicadora,
+            cover // 💡 Inclua a variável aqui para ela ir pro banco!
+        };
+
+        const newJogo = await Jogo.create(novoJogoData);
+        return res.status(201).json({ message: 'Jogo criado com sucesso', data: newJogo });
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Erro ao criar jogo', error: error.message });
     }
+}
 
     static async getAll(req, res) {
         try {

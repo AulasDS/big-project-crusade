@@ -1,0 +1,72 @@
+.loginContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 65px);
+    background: #181ae01b; // Fundo escuro azulado padrão
+}
+
+.loginForm {
+    background: #181a21;
+    border: 1px solid #2a313d;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+
+    h2 {
+        color: #fff;
+        font-size: 24px;
+        font-weight: 400;
+        letter-spacing: 2px;
+        margin-bottom: 30px;
+    }
+
+    .erro {
+        color: #ff4d4d;
+        background: rgba(255, 77, 77, 0.1);
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        color: #1a9fff; // Azul Steam
+        font-size: 12px;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        background: #32353c;
+        border: 1px solid #000;
+        color: #fff;
+        font-size: 14px;
+        margin-bottom: 20px;
+        outline: none;
+
+        &:focus {
+            border-color: #1a9fff;
+        }
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient( to right, #47bfff 0%, #1a9fff 100%);
+        border: none;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: bold;
+
+        &:hover {
+            background: linear-gradient( to right, #54cbff 0%, #24a4ff 100%);
+        }
+    }
+}

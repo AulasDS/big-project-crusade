@@ -10,12 +10,9 @@ import InserirCliente from './pages/InserirClientes';
 import Clientes from './pages/Clientes';
 import Biblioteca from './pages/Biblioteca';
 import Rocket from './pages/Jogos/Rocket';
-<<<<<<< HEAD
 import Login from './pages/login'; 
-import JogoDetalhes from './pages/jogoDetalhes'; // 💡 IMPORTADO AQUI: A nova página dinâmica padrão Steam
-=======
+import JogoDetalhes from './pages/jogoDetalhes'; 
 import Carrinho from './pages/Carrinho';
->>>>>>> 9e67a8462c8ffcd4b76a7aa3d3f4d018e5b4b5dd
 
 function App() {
 
@@ -33,7 +30,7 @@ function App() {
         <Route path='/Biblioteca/' element={<Biblioteca />} />
         <Route path='/Rocket/' element={<Rocket/>} />
         
-        {/* 💡 ADICIONADO AQUI: Rota dinâmica que recebe o ID do Mongo e abre os detalhes de qualquer jogo */}
+        {/* Rota dinâmica que recebe o ID do Mongo e abre os detalhes de qualquer jogo */}
         <Route path='/jogo/:id' element={<JogoDetalhes />} /> 
         
         <Route path='/login' element={<Login />} /> 

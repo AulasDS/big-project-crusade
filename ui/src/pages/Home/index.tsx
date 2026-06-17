@@ -21,8 +21,8 @@ const featuredGames: Game[] = [
 ];
 
 const topSellers: Game[] = [
-  { id: 5, title: "Counter-Strike 2", price: "Grátis", rating: "Muito Positivo", image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg", tags: ["FPS"] },
-  { id: 6, title: "ELDEN RING", price: "R$ 199,90", rating: "Muito Positivo", image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg", tags: ["Souls-like"] },
+  { id: 5, title: "Arma Reforger", price: "R$ 204,04", rating: "Muito Positivo", image: "https://i.pinimg.com/1200x/23/7e/60/237e60be4d644784b238ef4dd5dd2107.jpg", tags: ["FPS"] },
+  { id: 6, title: "Yandere Simulator", price: "Gratis", rating: "Muito Positivo", image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg", tags: ["Souls-like"] },
   { id: 7, title: "Mortal Kombat 1", price: "R$ 139,90", rating: "Muito Positivo", image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1971870/header.jpg", tags: ["Fighting"] },
   { id: 8, title: "Resident Evil 4", price: "R$ 79,90", rating: "Muito Positivo", image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2050650/header.jpg", tags: ["Horror"] },
 ];

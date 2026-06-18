@@ -7,39 +7,41 @@ export default function NavBar() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Estado para guardar o usuário vindo do banco (via localStorage)
-    const [usuario, setUsuario] = useState({
+    // Estado inicial padrão (Garante o Convidado caso não ache ninguém)
+    const [usuario, setUsuario] = useState<any>({
         nome: 'CONVIDADO',
         foto: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=guest'
     });
 
-    // useEffect busca os dados assim que a barra carrega ou muda de página
     useEffect(() => {
         const dadosLocais = localStorage.getItem('usuarioLogado');
         if (dadosLocais) {
-            setUsuario(JSON.parse(dadosLocais));
+            const dadosConvertidos = JSON.parse(dadosLocais);
+            setUsuario(dadosConvertidos);
+            
+            // 💡 DICA DE OURO: Olhe esse log no F12 do navegador. Se o campo "foto" estiver undefined ou vazio,
+            // significa que você precisa atualizar o cadastro do Gabriel no banco ou ajustar a rota de Login no Back-end!
+            console.log("Mongoose Usuario carregado na NavBar:", dadosConvertidos);
         }
-    }, [location]); // Fica de olho na rota caso o usuário mude de conta
+    }, [location]);
 
     const handleTrocarConta = () => {
-        localStorage.removeItem('usuarioLogado'); // Limpa a sessão
+        localStorage.removeItem('usuarioLogado');
         setShowMenu(false);
-        navigate('/login'); // Redireciona para a página de login criada
+        navigate('/login');
     };
+
+    // Se o Gabriel tiver uma URL no campo 'foto', usa ela. Senão, puxa um pixel-art com o nome dele!
+    const avatarFinal = usuario.foto && usuario.foto.trim() !== "" 
+        ? usuario.foto 
+        : `https://api.dicebear.com/7.x/pixel-art/svg?seed=${usuario.nome || 'Gabriel'}`;
 
     return (
         <nav className={styles.navbar}>
             <div className={styles.container}>
 
-                <Link to="/Home" className={styles.logo}>
-                    Steam
-                </Link>
-
                 <div className={styles.menu}>
-                    <Link 
-                        to="/Home" 
-                        className={styles.navLink}
-                    >
+                    <Link to="/Home" className={styles.navLink}>
                         LOJA
                     </Link>
                     <Link 
@@ -49,13 +51,30 @@ export default function NavBar() {
                         BIBLIOTECA
                     </Link>
 
+                    {/* Área de Perfil */}
                     <div className={styles.profileContainer}>
                         <button
                             className={styles.profileButton}
                             onClick={() => setShowMenu(!showMenu)}
+                            style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
                         >
-                            <span>{usuario.nome.toUpperCase()}</span>
+                            <span>{usuario.nome ? usuario.nome.toUpperCase() : 'GABRIEL'}</span>
                             <span className={styles.arrow}>▼</span>
+                            
+                            {/* Moldura da foto respeitando o UsuarioSchema */}
+                            <div style={{ border: '2px solid #4c6c8c', padding: '1px', display: 'flex', background: '#171a21' }}>
+                                <img 
+                                    src={avatarFinal} 
+                                    alt="Avatar do Usuário" 
+                                    style={{ 
+                                        width: '32px', 
+                                        height: '32px', 
+                                        display: 'block', 
+                                        imageRendering: 'pixelated',
+                                        objectFit: 'cover'
+                                    }} 
+                                />
+                            </div>
                         </button>
 
                         {showMenu && (
@@ -70,10 +89,6 @@ export default function NavBar() {
                             </div>
                         )}
                     </div>
-                </div>
-
-                <div className={styles.rightAvatarContainer}>
-                    <img src={usuario.foto} alt={usuario.nome} className={styles.topAvatar} />
                 </div>
 
             </div>

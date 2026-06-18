@@ -1,0 +1,217 @@
+// Cores inspiradas no layout da Steam
+$bg-dark: #1b2838;
+$bg-card: #101822;
+$bg-summary: #16202d;
+$text-primary: #ffffff;
+$text-secondary: #8f98a0;
+$blue-steam: #66c0f4;
+$green-btn: #5c7e10;
+$green-btn-hover: #739d13;
+$border-color: #3b506a;
+
+.cartPageWrapper {
+  background-color: $bg-dark;
+  color: $text-primary;
+  min-height: 100vh;
+  padding: 40px 20px;
+  font-family: "Motiva Sans", Sans-serif, Arial, Helvetica;
+
+  .cartTitle {
+    font-size: 26px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    border-bottom: 1px solid $border-color;
+    padding-bottom: 15px;
+  }
+}
+
+.emptyCart {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: $bg-card;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  p {
+    color: $text-secondary;
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .backBtn {
+    background-color: $blue-steam;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s;
+
+    &:hover {
+      background-color: lighten($blue-steam, 10%);
+    }
+  }
+}
+
+.cartContainer {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 30px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cartItemCard {
+  display: flex;
+  background-color: $bg-card;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  padding: 16px;
+  border-radius: 3px;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .gameCover {
+    width: 120px;
+    height: 65px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 2px;
+    flex-shrink: 0;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+
+    @media (max-width: 600px) {
+      width: 100%;
+      height: 140px;
+    }
+  }
+
+  .gameInfo {
+    flex-grow: 1;
+
+    h3 {
+      font-size: 18px;
+      font-weight: normal;
+      margin: 0 0 6px 0;
+      color: $text-primary;
+    }
+
+    .platformBadge {
+      font-size: 11px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: $text-secondary;
+      padding: 2px 6px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+  }
+
+  .priceAction {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    @media (max-width: 600px) {
+      width: 100%;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .price {
+      font-size: 16px;
+      color: $blue-steam;
+      font-weight: bold;
+    }
+
+    .buyBtn {
+      background: linear-gradient(to bottom, $green-btn-hover 0%, $green-btn 100%);
+      color: #fff;
+      border: none;
+      padding: 8px 24px;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border-radius: 2px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: filter 0.2s;
+
+      &:hover {
+        filter: brightness(1.2);
+      }
+    }
+  }
+}
+
+.cartSummary {
+  background-color: $bg-summary;
+  border: 1px solid $border-color;
+  padding: 20px;
+  border-radius: 3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  h3 {
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0 0 20px 0;
+    color: $blue-steam;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 10px;
+  }
+
+  .summaryRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: $text-secondary;
+    margin-bottom: 15px;
+
+    span:last-child {
+      color: $text-primary;
+      font-weight: bold;
+    }
+  }
+
+  .divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 20px 0;
+  }
+
+  .keepShoppingBtn {
+    width: 100%;
+    background-color: transparent;
+    color: $text-secondary;
+    border: 1px solid $border-color;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+
+    &:hover {
+      color: $text-primary;
+      border-color: lighten($border-color, 15%);
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+  }
+}

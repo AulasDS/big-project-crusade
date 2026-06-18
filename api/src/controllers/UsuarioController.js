@@ -1,5 +1,4 @@
 const Usuario = require('../models/Usuario');
-// 💡 Tentamos puxar a biblioteca de forma segura para não quebrar caso o arquivo não exista
 let Biblioteca;
 try {
     Biblioteca = require('../models/Biblioteca');
@@ -10,17 +9,19 @@ try {
 class UsuarioController {
     static async create(req, res) {
         try {
-            const { nome, email, nascimento, senha } = req.body;
+            // 💡 AGORA PEGA TUDO: nome, email, senha, nascimento e foto
+            const { nome, email, senha, nascimento, foto } = req.body;
             
-            if (!nome || !email || !nascimento || !senha) {
-                return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar nome, email e nascimento." });
+            if (!nome || !email || !senha || !nascimento) {
+                return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar nome, email, senha e nascimento." });
             }
 
             const clienteData = {
                 nome,
                 email,
-                nascimento,
-                senha
+                senha,
+                nascimento, // 💡 SALVA NO BANCO
+                foto: foto || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${nome}`
             };
 
             const newUsuario = await Usuario.create(clienteData);
@@ -57,12 +58,13 @@ class UsuarioController {
     static async update(req, res) {
         try {
             const { id } = req.params;
-            const { nome, email, nascimento } = req.body;
+            const { nome, email, nascimento, foto } = req.body;
             
             const updatedData = {
                 nome,
                 email,
-                nascimento
+                nascimento, // 💡 PERMITE ATUALIZAR A DATA SE PRECISAR
+                foto
             };
             
             const updatedUsuario = await Usuario.findByIdAndUpdate(id, updatedData, { new: true });
@@ -70,7 +72,7 @@ class UsuarioController {
             if (!updatedUsuario) {
                 return res.status(404).json({ message: 'Usuario não encontrado' });
             }
-            return res.status(200).json({ message: 'Usuario updatedUsuario com sucesso', data: updatedUsuario });
+            return res.status(200).json({ message: 'Usuario atualizado com sucesso', data: updatedUsuario });
         } catch (error) {
             return res.status(500).json({ message: 'Erro ao atualizar cliente', error: error.message });
         }
@@ -90,27 +92,21 @@ class UsuarioController {
         }
     }
 
-    // ========================================================
-    // 💡 NOVO MÉTODO: LOGIN DINÂMICO E PROTEGIDO CONTRA CRASH
-    // ========================================================
     static async login(req, res) {
         const { email, senha } = req.body;
 
         try {
-            // 1. Valida se o usuário existe
             const usuario = await Usuario.findOne({ email });
             if (!usuario) {
                 return res.status(400).json({ message: 'E-mail ou senha incorretos.' });
             }
 
-            // 2. Valida se a senha bate
             if (usuario.senha !== senha) {
                 return res.status(400).json({ message: 'E-mail ou senha incorretos.' });
             }
 
             let jogosDoUsuario = [];
 
-            // 3. Busca os jogos na tabela externa de Biblioteca de forma ultra segura
             if (Biblioteca) {
                 try {
                     const bibliotecaUsuario = await Biblioteca.findOne({ usuario: usuario._id }).populate('jogos');
@@ -122,12 +118,12 @@ class UsuarioController {
                 }
             }
 
-            // 4. Devolve a resposta limpa em JSON para o React ler sem quebrar
             return res.status(200).json({
                 id: usuario._id,
                 nome: usuario.nome,
                 email: usuario.email,
-                foto: usuario.foto || 'https://api.dicebear.com/7.x/pixel-art/svg?seed=guest',
+                nascimento: usuario.nascimento, // 💡 RETORNA NO LOGIN TAMBÉM
+                foto: usuario.foto || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${usuario.nome}`,
                 jogos: jogosDoUsuario 
             });
 

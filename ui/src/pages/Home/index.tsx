@@ -12,13 +12,14 @@ interface Game {
   rating: string;
   image: string;     
   tags: string[];    
+  jaPossui?: boolean; // 💡 Nova propriedade para controlar o aviso de posse
 }
 
 export default function Loja() {
   const [hovered, setHovered] = useState<string | number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Estados originais para guardar o que veio do banco (filtrado da biblioteca)
+  // Estados originais para guardar o que veio do banco
   const [todosJogosFiltrados, setTodosJogosFiltrados] = useState<Game[]>([]);
 
   // Guarda a categoria selecionada (null significa "Todos")
@@ -64,21 +65,32 @@ export default function Loja() {
         }
 
         if (Array.isArray(jogosDoBanco)) {
-          const jogosNaoComprados = jogosDoBanco.filter((item: any) => {
-            const idDoJogo = String(item._id || item.id);
-            return !idsJogosBiblioteca.includes(idDoJogo);
+          // 💡 IMPORTANTE: Removido o filtro que excluía os jogos já comprados!
+          
+          // Remove duplicatas de IDs vindas do banco de dados para evitar repetições visuais
+          const mapaJogosUnicos = new Map();
+          jogosDoBanco.forEach((item: any) => {
+            const idReal = String(item._id || item.id);
+            if (!mapaJogosUnicos.has(idReal)) {
+              mapaJogosUnicos.set(idReal, item);
+            }
           });
+          const listaSemDuplicados = Array.from(mapaJogosUnicos.values());
 
-          const jogosFormatados: Game[] =  jogosNaoComprados.map((item: any) => ({
-            _id: item._id,
-            id: item.id,
-            title: item.titulo, 
-            price: typeof item.preco === 'number' ? `R$ ${item.preco.toFixed(2).replace('.', ',')}` : item.preco, 
-            image: item.cover,  
-            rating: "Muito Positivo", 
-            tags: item.genero ? item.genero.split('/').map((t: string) => t.trim()) : ["Jogo"], 
-            discount: item.discount 
-          }));
+          const jogosFormatados: Game[] = listaSemDuplicados.map((item: any) => {
+            const idDoJogo = String(item._id || item.id);
+            return {
+              _id: item._id,
+              id: item.id,
+              title: item.titulo, 
+              price: typeof item.preco === 'number' ? `R$ ${item.preco.toFixed(2).replace('.', ',')}` : item.preco, 
+              image: item.cover,  
+              rating: "Muito Positivo", 
+              tags: item.genero ? item.genero.split('/').map((t: string) => t.trim()) : ["Jogo"], 
+              discount: item.discount,
+              jaPossui: idsJogosBiblioteca.includes(idDoJogo) // 💡 Marcamos true se o id estiver na biblioteca
+            };
+          });
 
           setTodosJogosFiltrados(jogosFormatados);
           distribuirJogosNasSecoes(jogosFormatados);
@@ -95,9 +107,12 @@ export default function Loja() {
 
   const distribuirJogosNasSecoes = (listaDeJogos: Game[]) => {
     setFeaturedGames(listaDeJogos.slice(0, 4)); 
-    setTopSellers(listaDeJogos.slice(0, 4));
-    setDiscountGames(listaDeJogos.filter(g => g.discount && g.discount > 0).length > 0 ? listaDeJogos.filter(g => g.discount && g.discount > 0) : listaDeJogos.slice(0, 4)); 
-    setRecommendedGames(listaDeJogos.slice(0, 6));
+    setTopSellers(listaDeJogos.length > 4 ? listaDeJogos.slice(4, 8) : listaDeJogos);
+    
+    const comDesconto = listaDeJogos.filter(g => g.discount && g.discount > 0);
+    setDiscountGames(comDesconto.length > 0 ? comDesconto : listaDeJogos.slice(0, 4)); 
+    
+    setRecommendedGames(listaDeJogos.length > 6 ? listaDeJogos.slice(6, 12) : listaDeJogos.slice(0, 6));
   };
 
   const lidarComFiltroCategoria = (categoria: string) => {
@@ -114,6 +129,8 @@ export default function Loja() {
   };
 
   async function adicionarAoCarrinho(jogo: Game) {
+    if (jogo.jaPossui) return; // Trava de segurança extra
+
     try {
       const dadosLocais = localStorage.getItem('usuarioLogado');
       if (!dadosLocais) {
@@ -124,7 +141,6 @@ export default function Loja() {
       const usuario = JSON.parse(dadosLocais);
       const idJogoReal = jogo._id || jogo.id; 
 
-      // Correção robusta do preço para evitar gerar NaN
       let precoNumerico = 0;
       if (jogo.price && !jogo.price.toLowerCase().includes('gratis')) {
         const apenasNumerosESinais = jogo.price.replace(/[^\d,.-]/g, '').replace(',', '.');
@@ -135,12 +151,10 @@ export default function Loja() {
       const novoItemCarrinho = {
         id_usuario: usuario.id,
         id_jogo: idJogoReal,
-        titulo_jogo: jogo.title, // 💡 Corrigido aqui de juego para jogo
+        titulo_jogo: jogo.title, 
         cover_jogo: jogo.image,
         preco_jogo: precoNumerico
       };
-
-      console.log("Enviando para o carrinho:", novoItemCarrinho);
 
       await axios.post("http://localhost:3000/carrinho", novoItemCarrinho);
       alert(`${jogo.title} foi adicionado ao seu carrinho!`);
@@ -195,16 +209,24 @@ export default function Loja() {
                         <div className={styles.gameInfo}>
                           <h3>{game.title}</h3>
                           <div className={styles.tags}>{game.tags?.join(" • ")}</div>
-                          {game.discount && <div className={styles.discount}>-{game.discount}%</div>}
+                          {game.discount && !game.jaPossui && <div className={styles.discount}>-{game.discount}%</div>}
                           
                           <div className={styles.priceRow}>
-                            <div className={styles.price}>
+                            <div className={styles.price} style={{ opacity: game.jaPossui ? 0.5 : 1 }}>
                               {game.oldPrice && <s>{game.oldPrice}</s>}
                               <span>{game.price}</span>
                             </div>
-                            <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>
-                              🛒+
-                            </button>
+                            
+                            {/* 💡 Condicional de aviso visual */}
+                            {game.jaPossui ? (
+                              <span style={{ backgroundColor: '#2f4153', color: '#66c0f4', padding: '4px 8px', borderRadius: '2px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                                NA BIBLIOTECA
+                              </span>
+                            ) : (
+                              <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>
+                                🛒+
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -226,8 +248,14 @@ export default function Loja() {
                         <div className={styles.gameInfo}>
                           <h4>{game.title}</h4>
                           <div className={styles.priceRow}>
-                            <div className={styles.price}>{game.price}</div>
-                            <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>🛒+</button>
+                            <div className={styles.price} style={{ opacity: game.jaPossui ? 0.5 : 1 }}>{game.price}</div>
+                            
+                            {/* 💡 Condicional de aviso visual */}
+                            {game.jaPossui ? (
+                              <span style={{ color: '#66c0f4', fontSize: '0.8rem', fontWeight: 'bold' }}>NA BIBLIOTECA</span>
+                            ) : (
+                              <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>🛒+</button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -250,11 +278,17 @@ export default function Loja() {
                           <h4>{game.title}</h4>
                           <p className={styles.rating}>{game.rating}</p>
                           <div className={styles.priceRow}>
-                            <div className={styles.price}>
+                            <div className={styles.price} style={{ opacity: game.jaPossui ? 0.5 : 1 }}>
                               {game.oldPrice && <s>{game.oldPrice}</s>}
                               <strong>{game.price}</strong>
                             </div>
-                            <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>🛒+</button>
+                            
+                            {/* 💡 Condicional de aviso visual */}
+                            {game.jaPossui ? (
+                              <span style={{ color: '#66c0f4', fontSize: '0.8rem', fontWeight: 'bold' }}>NA BIBLIOTECA</span>
+                            ) : (
+                              <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>🛒+</button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -277,8 +311,14 @@ export default function Loja() {
                           <h4>{game.title}</h4>
                           <div className={styles.tags}>{game.tags?.join(" • ")}</div>
                           <div className={styles.priceRow}>
-                            <div className={styles.price}>{game.price}</div>
-                            <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>🛒+</button>
+                            <div className={styles.price} style={{ opacity: game.jaPossui ? 0.5 : 1 }}>{game.price}</div>
+                            
+                            {/* 💡 Condicional de aviso visual */}
+                            {game.jaPossui ? (
+                              <span style={{ color: '#66c0f4', fontSize: '0.8rem', fontWeight: 'bold' }}>NA BIBLIOTECA</span>
+                            ) : (
+                              <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>🛒+</button>
+                            )}
                           </div>
                         </div>
                       </div>

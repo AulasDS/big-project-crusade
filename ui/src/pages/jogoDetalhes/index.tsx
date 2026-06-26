@@ -12,6 +12,7 @@ interface Jogo {
   publicadora: string;
   plataforma: string;
   cover?: string;
+  requisitos?: string; // 💡 Adicionado à interface se quiser usar dinâmico futuramente
 }
 
 export const JogoDetalhes: React.FC = () => {
@@ -37,13 +38,11 @@ export const JogoDetalhes: React.FC = () => {
       try {
         console.log("Buscando dados para o ID do jogo:", id);
         
-        // 💡 Ajuste essa URL caso sua rota do back seja /jogo/:id ao invés de /jogos/:id
         const resJogo = await fetch(`http://localhost:3000/jogo/${id}`);
         const dataJogo = await resJogo.json();
         
         console.log("Resposta bruta da API de Jogo:", dataJogo);
 
-        // 💡 Blindagem: tenta pegar de dataJogo.data ou do próprio dataJogo direto se não vier envelopado
         if (dataJogo.data) {
           setJogo(dataJogo.data);
         } else if (dataJogo && dataJogo.titulo) {
@@ -52,7 +51,6 @@ export const JogoDetalhes: React.FC = () => {
           console.error("Formato de resposta inesperado do Back-end:", dataJogo);
         }
 
-        // Busca Avaliação anterior se existir
         if (dadosLocais) {
           const usuario = JSON.parse(dadosLocais);
           const resAval = await fetch(`http://localhost:3000/avaliacoes/${usuario.id}/${id}`);
@@ -169,6 +167,33 @@ export const JogoDetalhes: React.FC = () => {
             <div className={styles.infoRow}><span>Distribuidora:</span> <strong>{jogo.publicadora}</strong></div>
             <div className={styles.infoRow}><span>Plataforma:</span> <strong>{jogo.plataforma}</strong></div>
           </div>
+
+          {/* 💡 NOVO QUADRADO DE REQUISITOS ADICIONADO AQUI */}
+          <div className={styles.requirementsBox} style={{
+            marginTop: '20px',
+            background: 'rgba(0, 0, 0, 0.2)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            padding: '15px',
+            fontSize: '12px',
+            color: '#acb2b8',
+            lineHeight: '1.6'
+          }}>
+            <h4 style={{ color: '#fff', fontSize: '13px', textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '1px' }}>
+              Requisitos do Sistema
+            </h4>
+            {jogo.requisitos ? (
+              <p style={{ whiteSpace: 'pre-line' }}>{jogo.requisitos}</p>
+            ) : (
+              <div>
+                <p><strong>SO:</strong> Windows 10/11 (64-bit)</p>
+                <p><strong>Processador:</strong> Intel Core i5-8400 ou AMD Ryzen 3 3300X</p>
+                <p><strong>Memória:</strong> 12 GB de RAM</p>
+                <p><strong>Placa de vídeo:</strong> NVIDIA GTX 1060 3GB ou AMD RX 580 4GB</p>
+                <p><strong>Armazenamento:</strong> 60 GB de espaço disponível (Preferencialmente SSD)</p>
+              </div>
+            )}
+          </div>
+
         </div>
       </div>
     </div>

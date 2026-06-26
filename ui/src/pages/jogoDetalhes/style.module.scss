@@ -132,6 +132,36 @@
   }
 }
 
+/* 💡 NOVA CLASSE DA BOX DE REQUISITOS ADICIONADA */
+.requirementsBox {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 15px;
+  font-size: 12px;
+  color: #acb2b8;
+  line-height: 1.6;
+
+  h4 {
+    color: #fff;
+    font-size: 13px;
+    text-transform: uppercase;
+    margin-top: 0;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 5px;
+  }
+
+  p {
+    margin: 6px 0;
+    strong {
+      color: #66c0f4; /* Deixa o "SO:", "Processador:" em azul claro como na Steam */
+      font-weight: 500;
+    }
+  }
+}
+
 .loading, .error {
   color: #fff;
   text-align: center;

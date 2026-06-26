@@ -44,11 +44,20 @@ export default function NavBar() {
                     <Link to="/Home" className={styles.navLink}>
                         LOJA
                     </Link>
+                    
                     <Link 
                         to="/Biblioteca" 
                         className={`${styles.navLink} ${location.pathname === '/Biblioteca' ? styles.active : ''}`}
                     >
                         BIBLIOTECA
+                    </Link>
+
+                    {/* 💡 NOVO LINK DO CARRINHO ADICIONADO NA NAVBAR */}
+                    <Link 
+                        to="/carrinho" 
+                        className={`${styles.navLink} ${location.pathname === '/carrinho' ? styles.active : ''}`}
+                    >
+                        🛒 CARRINHO
                     </Link>
 
                     {/* Área de Perfil */}

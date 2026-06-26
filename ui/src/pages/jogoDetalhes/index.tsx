@@ -12,7 +12,7 @@ interface Jogo {
   publicadora: string;
   plataforma: string;
   cover?: string;
-  requisitos?: string; // 💡 Adicionado à interface se quiser usar dinâmico futuramente
+  requisitos?: string; // 💡 Atualizado na interface para receber do banco
 }
 
 export const JogoDetalhes: React.FC = () => {
@@ -168,28 +168,19 @@ export const JogoDetalhes: React.FC = () => {
             <div className={styles.infoRow}><span>Plataforma:</span> <strong>{jogo.plataforma}</strong></div>
           </div>
 
-          {/* 💡 NOVO QUADRADO DE REQUISITOS ADICIONADO AQUI */}
-          <div className={styles.requirementsBox} style={{
-            marginTop: '20px',
-            background: 'rgba(0, 0, 0, 0.2)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            padding: '15px',
-            fontSize: '12px',
-            color: '#acb2b8',
-            lineHeight: '1.6'
-          }}>
-            <h4 style={{ color: '#fff', fontSize: '13px', textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '1px' }}>
-              Requisitos do Sistema
-            </h4>
-            {jogo.requisitos ? (
+          {/* 💡 BOX DE REQUISITOS TOTALMENTE DINÂMICO */}
+          <div className={styles.requirementsBox}>
+            <h4>Requisitos do Sistema</h4>
+            {jogo.requisitos && jogo.requisitos.trim() !== "" ? (
+              // O whiteSpace: 'pre-line' quebra as linhas certinho igual você digitar no banco
               <p style={{ whiteSpace: 'pre-line' }}>{jogo.requisitos}</p>
             ) : (
               <div>
+                <p style={{ color: '#e44c4c', marginBottom: '8px' }}>⚠️ Requisitos não informados no banco.</p>
                 <p><strong>SO:</strong> Windows 10/11 (64-bit)</p>
-                <p><strong>Processador:</strong> Intel Core i5-8400 ou AMD Ryzen 3 3300X</p>
-                <p><strong>Memória:</strong> 12 GB de RAM</p>
-                <p><strong>Placa de vídeo:</strong> NVIDIA GTX 1060 3GB ou AMD RX 580 4GB</p>
-                <p><strong>Armazenamento:</strong> 60 GB de espaço disponível (Preferencialmente SSD)</p>
+                <p><strong>Processador:</strong> Intel Core i5 ou equivalente</p>
+                <p><strong>Memória:</strong> 8 GB de RAM</p>
+                <p><strong>Armazenamento:</strong> 50 GB de espaço disponível</p>
               </div>
             )}
           </div>

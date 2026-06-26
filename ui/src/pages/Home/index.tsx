@@ -21,7 +21,7 @@ export default function Loja() {
   // Estados originais para guardar o que veio do banco (filtrado da biblioteca)
   const [todosJogosFiltrados, setTodosJogosFiltrados] = useState<Game[]>([]);
 
-  // 💡 NOVO ESTADO: Guarda a categoria selecionada (null significa "Todos")
+  // Guarda a categoria selecionada (null significa "Todos")
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
 
   // Estados das seções da vitrine
@@ -80,10 +80,7 @@ export default function Loja() {
             discount: item.discount 
           }));
 
-          // Guarda a lista total limpa da biblioteca para usarmos no filtro de clique
           setTodosJogosFiltrados(jogosFormatados);
-
-          // Inicializa as seções com todos os jogos disponíveis
           distribuirJogosNasSecoes(jogosFormatados);
         }
       } catch (error) {
@@ -96,7 +93,6 @@ export default function Loja() {
     buscarDadosDaLoja();
   }, []);
 
-  // 💡 FUNÇÃO AUXILIAR: Fatia e distribui os jogos de acordo com o filtro ativo
   const distribuirJogosNasSecoes = (listaDeJogos: Game[]) => {
     setFeaturedGames(listaDeJogos.slice(0, 4)); 
     setTopSellers(listaDeJogos.slice(0, 4));
@@ -104,14 +100,12 @@ export default function Loja() {
     setRecommendedGames(listaDeJogos.slice(0, 6));
   };
 
-  // 💡 LÓGICA DE FILTRAGEM AO CLICAR NO BOTÃO
   const lidarComFiltroCategoria = (categoria: string) => {
     if (categoria === "Todos") {
       setCategoriaSelecionada(null);
-      distribuirJogosNasSecoes(todosJogosFiltrados); // Mostra tudo de novo
+      distribuirJogosNasSecoes(todosJogosFiltrados);
     } else {
       setCategoriaSelecionada(categoria);
-      // Filtra os jogos onde a tag inclui o nome da categoria clicada
       const jogosFiltradosPorGenero = todosJogosFiltrados.filter(jogo => 
         jogo.tags.some(tag => tag.toLowerCase().includes(categoria.toLowerCase()))
       );
@@ -130,23 +124,29 @@ export default function Loja() {
       const usuario = JSON.parse(dadosLocais);
       const idJogoReal = jogo._id || jogo.id; 
 
-      const precoNumerico = jogo.price.toLowerCase().includes('gratis') 
-        ? 0 
-        : parseFloat(jogo.price.replace("R$", "").replace(",", ".").trim());
+      // Correção robusta do preço para evitar gerar NaN
+      let precoNumerico = 0;
+      if (jogo.price && !jogo.price.toLowerCase().includes('gratis')) {
+        const apenasNumerosESinais = jogo.price.replace(/[^\d,.-]/g, '').replace(',', '.');
+        precoNumerico = parseFloat(apenasNumerosESinais);
+        if (isNaN(precoNumerico)) precoNumerico = 0;
+      }
 
       const novoItemCarrinho = {
         id_usuario: usuario.id,
         id_jogo: idJogoReal,
-        titulo_jogo: jogo.title,
+        titulo_jogo: jogo.title, // 💡 Corrigido aqui de juego para jogo
         cover_jogo: jogo.image,
         preco_jogo: precoNumerico
       };
 
+      console.log("Enviando para o carrinho:", novoItemCarrinho);
+
       await axios.post("http://localhost:3000/carrinho", novoItemCarrinho);
       alert(`${jogo.title} foi adicionado ao seu carrinho!`);
-    } catch (error) {
-      console.error("Erro ao adicionar ao carrinho:", error);
-      alert("Não foi possível adicionar o jogo ao carrinho.");
+    } catch (error: any) {
+      console.error("Erro detalhado do Backend:", error.response?.data || error.message);
+      alert(error.response?.data?.message || "Não foi possível adicionar o jogo ao carrinho.");
     }
   }
 
@@ -157,7 +157,6 @@ export default function Loja() {
   return (
     <div className={styles.storeContainer}>
       
-      {/* 💡 MENU DE FILTROS POR CATEGORIA NA HOME */}
       <div className={styles.filterContainer} style={{ display: 'flex', gap: '10px', padding: '20px 0', justifyContent: 'center' }}>
         {categorias.map((cat) => (
           <button

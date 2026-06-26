@@ -12,7 +12,7 @@ interface Game {
   rating: string;
   image: string;     
   tags: string[];    
-  jaPossui?: boolean; // 💡 Nova propriedade para controlar o aviso de posse
+  jaPossui?: boolean; // Nova propriedade para controlar o aviso de posse
 }
 
 export default function Loja() {
@@ -22,7 +22,7 @@ export default function Loja() {
   // Estados originais para guardar o que veio do banco
   const [todosJogosFiltrados, setTodosJogosFiltrados] = useState<Game[]>([]);
 
-  // 💡 NOVO ESTADO: Guarda a categoria selecionada (null significa "Todos")
+  // Guarda a categoria selecionada (null significa "Todos")
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
 
   // Estados das seções da vitrine
@@ -42,9 +42,10 @@ export default function Loja() {
 
         if (dadosLocais) {
           const usuario = JSON.parse(dadosLocais);
+          const idUsuarioReal = usuario.id || usuario._id;
           
           try {
-            const respostaBiblioteca = await axios.get(`http://localhost:3000/biblioteca/${usuario.id}`);
+            const respostaBiblioteca = await axios.get(`http://localhost:3000/biblioteca/${idUsuarioReal}`);
             const biblioteca = respostaBiblioteca.data;
             
             if (biblioteca && biblioteca.data && Array.isArray(biblioteca.data.jogos)) {
@@ -65,8 +66,6 @@ export default function Loja() {
         }
 
         if (Array.isArray(jogosDoBanco)) {
-          // 💡 IMPORTANTE: Removido o filtro que excluía os jogos já comprados!
-          
           // Remove duplicatas de IDs vindas do banco de dados para evitar repetições visuais
           const mapaJogosUnicos = new Map();
           jogosDoBanco.forEach((item: any) => {
@@ -88,14 +87,11 @@ export default function Loja() {
               rating: "Muito Positivo", 
               tags: item.genero ? item.genero.split('/').map((t: string) => t.trim()) : ["Jogo"], 
               discount: item.discount,
-              jaPossui: idsJogosBiblioteca.includes(idDoJogo) // 💡 Marcamos true se o id estiver na biblioteca
+              jaPossui: idsJogosBiblioteca.includes(idDoJogo)
             };
           });
 
-          // Guarda a lista total limpa da biblioteca para usarmos no filtro de clique
           setTodosJogosFiltrados(jogosFormatados);
-
-          // Inicializa as seções com todos os jogos disponíveis
           distribuirJogosNasSecoes(jogosFormatados);
         }
       } catch (error) {
@@ -108,7 +104,6 @@ export default function Loja() {
     buscarDadosDaLoja();
   }, []);
 
-  // 💡 FUNÇÃO AUXILIAR: Fatia e distribui os jogos de acordo com o filtro ativo
   const distribuirJogosNasSecoes = (listaDeJogos: Game[]) => {
     setFeaturedGames(listaDeJogos.slice(0, 4)); 
     setTopSellers(listaDeJogos.length > 4 ? listaDeJogos.slice(4, 8) : listaDeJogos);
@@ -119,14 +114,12 @@ export default function Loja() {
     setRecommendedGames(listaDeJogos.length > 6 ? listaDeJogos.slice(6, 12) : listaDeJogos.slice(0, 6));
   };
 
-  // 💡 LÓGICA DE FILTRAGEM AO CLICAR NO BOTÃO
   const lidarComFiltroCategoria = (categoria: string) => {
     if (categoria === "Todos") {
       setCategoriaSelecionada(null);
-      distribuirJogosNasSecoes(todosJogosFiltrados); // Mostra tudo de novo
+      distribuirJogosNasSecoes(todosJogosFiltrados);
     } else {
       setCategoriaSelecionada(categoria);
-      // Filtra os jogos onde a tag inclui o nome da categoria clicada
       const jogosFiltradosPorGenero = todosJogosFiltrados.filter(jogo => 
         jogo.tags.some(tag => tag.toLowerCase().includes(categoria.toLowerCase()))
       );
@@ -134,8 +127,9 @@ export default function Loja() {
     }
   };
 
+  // 🌟 FUNÇÃO AJUSTADA COM AS CHAVES CORRETAS: iduser e idjogo
   async function adicionarAoCarrinho(jogo: Game) {
-    if (jogo.jaPossui) return; // Trava de segurança extra
+    if (jogo.jaPossui) return;
 
     try {
       const dadosLocais = localStorage.getItem('usuarioLogado');
@@ -145,24 +139,32 @@ export default function Loja() {
       }
 
       const usuario = JSON.parse(dadosLocais);
+      
       const idJogoReal = jogo._id || jogo.id; 
-      const precoNumerico = jogo.price.toLowerCase().includes('gratis') 
-      ? 0 
-      : parseFloat(jogo.price.replace("R$", "").replace(",", ".").trim());
+      const idUsuarioReal = usuario.id || usuario._id; 
 
+      if (!idUsuarioReal || !idJogoReal) {
+        alert("Erro interno ao identificar usuário ou jogo.");
+        return;
+      }
+
+      // 🎯 Chaves mapeadas exatamente como o seu backend pediu:
       const novoItemCarrinho = {
-        id_usuario: usuario.id,
-        id_jogo: idJogoReal,
-        titulo_jogo: jogo.title,
-        cover_jogo: jogo.image,
-        preco_jogo: precoNumerico
+        iduser: idUsuarioReal,
+        idjogo: idJogoReal
       };
 
       await axios.post("http://localhost:3000/carrinho", novoItemCarrinho);
       alert(`${jogo.title} foi adicionado ao seu carrinho!`);
-    } catch (error) {
-      console.error("Erro ao adicionar ao carrinho:", error);
-      alert("Não foi possível adicionar o jogo ao carrinho.");
+    } catch (error: any) {
+      console.error("====== 🔍 RELATÓRIO DE ERRO DO CARRINHO ======");
+      if (error.response) {
+        console.error("Status HTTP do Backend:", error.response.status);
+        console.error("Dados/Mensagem da API:", error.response.data);
+      } else {
+        console.error("Erro na comunicação/Network:", error.message);
+      }
+      alert("Erro ao adicionar ao carrinho. Verifique o console.");
     }
   }
 
@@ -173,7 +175,7 @@ export default function Loja() {
   return (
     <div className={styles.storeContainer}>
       
-      {/* 💡 MENU DE FILTROS POR CATEGORIA NA HOME */}
+      {/* MENU DE FILTROS POR CATEGORIA */}
       <div className={styles.filterContainer} style={{ display: 'flex', gap: '10px', padding: '20px 0', justifyContent: 'center' }}>
         {categorias.map((cat) => (
           <button
@@ -198,46 +200,43 @@ export default function Loja() {
       <main>
         {featuredGames.length > 0 ? (
           <>
-            {featuredGames.length > 0 && (
-              <section className={styles.featuredSection}>
-                <h2>EM DESTAQUE</h2>
-                <div className={styles.featuredGrid}>
-                  {featuredGames.map((game) => {
-                    const gameId = game._id || game.id || '';
-                    return (
-                      <div key={gameId} className={styles.featuredCard}
-                        onMouseEnter={() => setHovered(gameId)}
-                        onMouseLeave={() => setHovered(null)}>
-                        <img src={game.image} alt={game.title} />
-                        <div className={styles.gameInfo}>
-                          <h3>{game.title}</h3>
-                          <div className={styles.tags}>{game.tags?.join(" • ")}</div>
-                          {game.discount && !game.jaPossui && <div className={styles.discount}>-{game.discount}%</div>}
-                          
-                          <div className={styles.priceRow}>
-                            <div className={styles.price} style={{ opacity: game.jaPossui ? 0.5 : 1 }}>
-                              {game.oldPrice && <s>{game.oldPrice}</s>}
-                              <span>{game.price}</span>
-                            </div>
-                            
-                            {/* 💡 Condicional de aviso visual */}
-                            {game.jaPossui ? (
-                              <span style={{ backgroundColor: '#2f4153', color: '#66c0f4', padding: '4px 8px', borderRadius: '2px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                                NA BIBLIOTECA
-                              </span>
-                            ) : (
-                              <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>
-                                🛒+
-                              </button>
-                            )}
+            <section className={styles.featuredSection}>
+              <h2>EM DESTAQUE</h2>
+              <div className={styles.featuredGrid}>
+                {featuredGames.map((game) => {
+                  const gameId = game._id || game.id || '';
+                  return (
+                    <div key={gameId} className={styles.featuredCard}
+                      onMouseEnter={() => setHovered(gameId)}
+                      onMouseLeave={() => setHovered(null)}>
+                      <img src={game.image} alt={game.title} />
+                      <div className={styles.gameInfo}>
+                        <h3>{game.title}</h3>
+                        <div className={styles.tags}>{game.tags?.join(" • ")}</div>
+                        {game.discount && !game.jaPossui && <div className={styles.discount}>-{game.discount}%</div>}
+                        
+                        <div className={styles.priceRow}>
+                          <div className={styles.price} style={{ opacity: game.jaPossui ? 0.5 : 1 }}>
+                            {game.oldPrice && <s>{game.oldPrice}</s>}
+                            <span>{game.price}</span>
                           </div>
+                          
+                          {game.jaPossui ? (
+                            <span style={{ backgroundColor: '#2f4153', color: '#66c0f4', padding: '4px 8px', borderRadius: '2px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                              NA BIBLIOTECA
+                            </span>
+                          ) : (
+                            <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>
+                              🛒+
+                            </button>
+                          )}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
 
             {topSellers.length > 0 && (
               <section className={styles.section}>
@@ -252,8 +251,6 @@ export default function Loja() {
                           <h4>{game.title}</h4>
                           <div className={styles.priceRow}>
                             <div className={styles.price} style={{ opacity: game.jaPossui ? 0.5 : 1 }}>{game.price}</div>
-                            
-                            {/* 💡 Condicional de aviso visual */}
                             {game.jaPossui ? (
                               <span style={{ color: '#66c0f4', fontSize: '0.8rem', fontWeight: 'bold' }}>NA BIBLIOTECA</span>
                             ) : (
@@ -285,8 +282,6 @@ export default function Loja() {
                               {game.oldPrice && <s>{game.oldPrice}</s>}
                               <strong>{game.price}</strong>
                             </div>
-                            
-                            {/* 💡 Condicional de aviso visual */}
                             {game.jaPossui ? (
                               <span style={{ color: '#66c0f4', fontSize: '0.8rem', fontWeight: 'bold' }}>NA BIBLIOTECA</span>
                             ) : (
@@ -315,8 +310,6 @@ export default function Loja() {
                           <div className={styles.tags}>{game.tags?.join(" • ")}</div>
                           <div className={styles.priceRow}>
                             <div className={styles.price} style={{ opacity: game.jaPossui ? 0.5 : 1 }}>{game.price}</div>
-                            
-                            {/* 💡 Condicional de aviso visual */}
                             {game.jaPossui ? (
                               <span style={{ color: '#66c0f4', fontSize: '0.8rem', fontWeight: 'bold' }}>NA BIBLIOTECA</span>
                             ) : (

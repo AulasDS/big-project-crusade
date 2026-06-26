@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import styles from './style.module.scss'; // Crie o scss para estilizar!
+import styles from './style.module.scss';
 
 // Interfaces para o TypeScript entender o formato dos dados
 interface ItemCarrinho {
   id: number;
   id_usuario: number;
   id_jogo: number;
-  // 💡 Adicionado campos extras para você conseguir exibir o nome e a foto do jogo no carrinho
   titulo_jogo?: string; 
   cover_jogo?: string;
   preco_jogo?: number;
@@ -26,7 +25,7 @@ export default function Carrinho() {
   const [loading, setLoading] = useState(true);
   const [idUsuarioLogado, setIdUsuarioLogado] = useState<number | null>(null);
 
-  // 💡 1. Carrega os itens do carrinho do usuário logado assim que a página abre
+  // 1. Carrega os itens do carrinho do usuário logado assim que a página abre
   useEffect(() => {
     const buscarCarrinho = async () => {
       try {
@@ -42,9 +41,12 @@ export default function Carrinho() {
 
         // Busca os itens do carrinho filtrando pelo ID do usuário logado
         const resposta = await axios.get<ItemCarrinho[]>(`http://localhost:3000/carrinho?id_usuario=${usuario.id}`);
-        setItensCarrinho(resposta.data);
+        
+        // SEGURANÇA: Garante que itensCarrinho sempre receba um Array, evitando erro de .map()
+        setItensCarrinho(Array.isArray(resposta.data) ? resposta.data : []);
       } catch (error) {
         console.error("Erro ao buscar itens do carrinho:", error);
+        setItensCarrinho([]);
       } finally {
         setLoading(false);
       }
@@ -60,28 +62,35 @@ export default function Carrinho() {
       const respostaCarrinho = await axios.get<ItemCarrinho>(`http://localhost:3000/carrinho/${idItemCarrinho}`);
       const item = respostaCarrinho.data;
       
+      if (!item) {
+        alert("Erro: Item não encontrado no carrinho.");
+        return;
+      }
+
       const idUsuario = item.id_usuario;
       const idJogoNovo = item.id_jogo;
 
       // 2. GET para buscar a biblioteca atual do usuário
       const respostaBiblioteca = await axios.get<Biblioteca[]>(`http://localhost:3000/biblioteca?id_usuario=${idUsuario}`);
-      
-      // Se o backend retorna uma lista, pegamos o primeiro item (a biblioteca do usuário)
       const bibliotecaAtual = respostaBiblioteca.data[0]; 
 
+      // SEGURANÇA: Se o usuário não tiver biblioteca criada no banco, interrompe antes de quebrar
       if (!bibliotecaAtual) {
-        alert("Erro: Biblioteca do usuário não encontrada!");
+        alert("Erro: Biblioteca do usuário não encontrada no servidor!");
         return;
       }
 
+      // SEGURANÇA: Garante que a propriedade jogos seja tratada como array antes do .includes()
+      const jogosDaBiblioteca = Array.isArray(bibliotecaAtual.jogos) ? bibliotecaAtual.jogos : [];
+
       // Validação: Evitar duplicidade de jogo na biblioteca
-      if (bibliotecaAtual.jogos.includes(idJogoNovo)) {
+      if (jogosDaBiblioteca.includes(idJogoNovo)) {
         alert("Você já possui esse jogo na sua biblioteca!");
         return;
       }
 
       // 3. Monta a nova lista de jogos incluindo o novo ID
-      const listaJogosAtualizada = [...bibliotecaAtual.jogos, idJogoNovo];
+      const listaJogosAtualizada = [...jogosDaBiblioteca, idJogoNovo];
 
       // 4. PUT para atualizar a biblioteca do usuário
       await axios.put(`http://localhost:3000/biblioteca/${bibliotecaAtual.id}`, {
@@ -94,16 +103,18 @@ export default function Carrinho() {
 
       alert("Jogo adicionado à biblioteca com sucesso!");
       
-      // 💡 2. ATUALIZAÇÃO EM TEMPO REAL: Remove o item comprado do estado da tela sem precisar dar reload
+      // Atualização em tempo real na tela
       setItensCarrinho(prevItens => prevItens.filter(i => i.id !== idItemCarrinho));
 
     } catch (error) {
       console.error("Erro ao processar a compra:", error);
-      alert("Houve um erro ao processar sua compra.");
+      alert("Houve um erro ao processar sua compra. Verifique o console.");
     }
   }
 
-  if (loading) return <div style={{ color: '#fff', padding: '50px', textAlign: 'center' }}>Carregando carrinho...</div>;
+  if (loading) {
+    return <div style={{ color: '#fff', padding: '50px', textAlign: 'center' }}>Carregando carrinho...</div>;
+  }
 
   return (
     <div className={styles.cartPageWrapper}>
@@ -132,9 +143,12 @@ export default function Carrinho() {
 
                 <div className={styles.priceAction}>
                   <span className={styles.price}>
-                    {item.preco_jogo && item.preco_jogo > 0 ? `R$ ${item.preco_jogo.toFixed(2)}` : 'Gratuito'}
+                    {/* SEGURANÇA: Evita que o toFixed() quebre caso o preço venha nulo ou indefinido */}
+                    {item.preco_jogo && Number(item.preco_jogo) > 0 
+                      ? `R$ ${Number(item.preco_jogo).toFixed(2)}` 
+                      : 'Gratuito'
+                    }
                   </span>
-                  {/* 💡 O Botão agora passa dinamicamente o ID correto de cada item do carrinho */}
                   <button 
                     onClick={() => handleFinalizarCompra(item.id)} 
                     className={styles.buyBtn}

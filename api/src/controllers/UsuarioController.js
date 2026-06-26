@@ -25,6 +25,9 @@ class UsuarioController {
             };
 
             const newUsuario = await Usuario.create(clienteData);
+
+            //criar carrinho desse user
+
             return res.status(201).json({ message: 'Usuario criado com sucesso', data: newUsuario });
 
         } catch (error) {

@@ -129,10 +129,9 @@ export default function Loja() {
 
       const usuario = JSON.parse(dadosLocais);
       const idJogoReal = jogo._id || jogo.id; 
-
       const precoNumerico = jogo.price.toLowerCase().includes('gratis') 
-        ? 0 
-        : parseFloat(jogo.price.replace("R$", "").replace(",", ".").trim());
+      ? 0 
+      : parseFloat(jogo.price.replace("R$", "").replace(",", ".").trim());
 
       const novoItemCarrinho = {
         id_usuario: usuario.id,

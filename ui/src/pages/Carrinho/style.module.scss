@@ -52,7 +52,7 @@ $border-color: #3b506a;
     transition: background 0.2s;
 
     &:hover {
-      background-color: lighten($blue-steam, 10%);
+      background-color: $blue-steam, 10%;
     }
   }
 }
@@ -210,7 +210,7 @@ $border-color: #3b506a;
 
     &:hover {
       color: $text-primary;
-      border-color: lighten($border-color, 15%);
+      border-color: $border-color;
       background-color: rgba(255, 255, 255, 0.02);
     }
   }

@@ -33,7 +33,7 @@ class CarrinhoController {
 
     static async getById(req, res) {
         try {
-            const { id } = req.params; // ID do usuário vindo da URL
+            const { id } = req.params; 
 
             const carrinho = await Carrinho.findOne({ usuario: id })
                 .populate('usuario')
@@ -57,10 +57,10 @@ class CarrinhoController {
         }
     }
 
-    // Adiciona o jogo ao carrinho se ele ainda não estiver lá, mantendo os antigos intactos!
+    
     static async update(req, res) {
         try {
-            const { id } = req.params; // ID do USUÁRIO na URL
+            const { id } = req.params; 
             const { idjogo } = req.body;
 
             if (!idjogo) {
@@ -73,11 +73,11 @@ class CarrinhoController {
                 { usuario: id }, 
                 {
                     $addToSet: {
-                        jogos: idjogo // O $addToSet adiciona ao array mantendo os anteriores e impede duplicados!
+                        jogos: idjogo 
                     }
                 },
                 { 
-                    returnDocument: 'after' // Atualizado para evitar avisos de depreciação do Mongoose
+                    returnDocument: 'after' 
                 }
             ).populate('jogos');
 
@@ -100,11 +100,11 @@ class CarrinhoController {
         }
     }
 
-    // Remove apenas o jogo específico de dentro do array de jogos do usuário (chamado após finalizar a compra)
+  
     static async removerJogo(req, res) {
     try {
-        const { id } = req.params; // ID do Usuário
-        // Aceita o idjogo vindo do corpo ou dos parâmetros para não ter erro
+        const { id } = req.params; 
+       
         const idjogo = req.body.idjogo || req.query.idjogo; 
 
         console.log(`[Carrinho] Tentando remover o jogo ${idjogo} do usuário ${id}`);
@@ -116,7 +116,7 @@ class CarrinhoController {
         const updatedCarrinho = await Carrinho.findOneAndUpdate(
             { usuario: id },
             {
-                $pull: { jogos: idjogo } // Remove o jogo específico do array
+                $pull: { jogos: idjogo } 
             },
             { returnDocument: 'after' }
         ).populate('jogos');

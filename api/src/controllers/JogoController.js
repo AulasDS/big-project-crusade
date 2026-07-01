@@ -35,7 +35,7 @@ class JogoController {
                 desenvolvedora,
                 publicadora,
                 cover,
-                requisitos // 💡 Incluído para ir para o banco de dados
+                requisitos 
             };
 
             const newJogo = await Jogo.create(novoJogoData);
@@ -46,7 +46,7 @@ class JogoController {
         }
     }
 
-    // Buscar todos os jogos
+  
     static async getAll(req, res) {
         try {
             const jogo = await Jogo.find();
@@ -56,7 +56,7 @@ class JogoController {
         }
     }
 
-    // Buscar jogo por ID
+    
     static async getById(req, res) {
         try {
             const { id } = req.params;
@@ -71,7 +71,7 @@ class JogoController {
         }
     }
 
-    // Atualizar dados do jogo
+  
     static async update(req, res) {
         try {
             const { id } = req.params;
@@ -85,8 +85,8 @@ class JogoController {
                 plataforma, 
                 desenvolvedora, 
                 publicadora,
-                cover,      // 💡 Mantendo o mapeamento de cover também no update
-                requisitos  // 💡 Adicionado aqui para permitir edição
+                cover,      
+                requisitos  
             } = req.body;
             
             const updatedData = {
@@ -114,7 +114,7 @@ class JogoController {
         }
     }
 
-    // Deletar um jogo
+
     static async delete(req, res) {
         try {
             const { id } = req.params;

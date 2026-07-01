@@ -27,10 +27,10 @@ class UsuarioController {
 
             const newUsuario = await Usuario.create(clienteData);
 
-            // 💡 PASSO 2: Criar o carrinho automaticamente assim que o usuário é salvo no banco
+            
             await Carrinho.create({
                 usuario: newUsuario._id,
-                jogos: [] // Começa completamente vazio para o cliente adicionar itens depois
+                jogos: [] 
             });
 
             return res.status(201).json({ message: 'Usuario criado com sucesso', data: newUsuario });

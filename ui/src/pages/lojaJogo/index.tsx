@@ -359,7 +359,7 @@ export const JogoLoja: React.FC = () => {
           </div>
         </div>
 
-        {/* COLUNA DIREITA (Sidebar) */}
+        
         <div className={styles.rightCol}>
           <img src={jogo.cover} alt="Capa" className={styles.sideImage} />
 

@@ -9,9 +9,7 @@
                     return res.status(400).json({ message: "Dados inválidos. Certifique-se de enviar iduser e idjogo." });
                 }
 
-                // 🎯 CORREÇÃO CRUCIAL:
-                // Procura a biblioteca do usuário. Se existir, adiciona o jogo ao array ($addToSet evita duplicados).
-                // Se NÃO existir, o 'upsert: true' cria uma nova biblioteca para esse usuário na hora.
+        
                 const bibliotecaAtualizada = await Biblioteca.findOneAndUpdate(
                     { usuario: iduser }, 
                     {
@@ -20,8 +18,8 @@
                         }
                     },
                     { 
-                        new: true,       // Retorna o documento já atualizado
-                        upsert: true,    // Cria o documento se ele não existir
+                        new: true,      
+                        upsert: true,    
                         returnDocument: 'after'
                     }
                 ).populate('usuario').populate('jogos');

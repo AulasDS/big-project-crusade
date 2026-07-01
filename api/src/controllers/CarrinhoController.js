@@ -32,77 +32,111 @@ class CarrinhoController {
     }
 
     static async getById(req, res) {
-    try {
-        const { id } = req.params;
+        try {
+            const { id } = req.params; // ID do usuário vindo da URL
 
-        const carrinho = await Carrinho.findOne({ usuario: id })
-            .populate('usuario')
-            .populate('jogos');
+            const carrinho = await Carrinho.findOne({ usuario: id })
+                .populate('usuario')
+                .populate('jogos');
 
-        if (!carrinho) {
-            return res.status(404).json({ 
-                message: 'Carrinho não encontrada'
+            if (!carrinho) {
+                return res.status(404).json({ 
+                    message: 'Carrinho não encontrado'
+                });
+            }
+
+            return res.status(200).json({ 
+                data: carrinho 
+            });
+
+        } catch (error) {
+            return res.status(500).json({ 
+                message: 'Erro ao encontrar Carrinho', 
+                error: error.message 
             });
         }
-
-        return res.status(200).json({ 
-            data: carrinho 
-        });
-
-    } catch (error) {
-        return res.status(500).json({ 
-            message: 'Erro ao encontrar Carrinho', 
-            error: error.message 
-        });
     }
-}
 
- static async update(req, res) {
+    // Adiciona o jogo ao carrinho se ele ainda não estiver lá, mantendo os antigos intactos!
+    static async update(req, res) {
+        try {
+            const { id } = req.params; // ID do USUÁRIO na URL
+            const { idjogo } = req.body;
+
+            if (!idjogo) {
+                return res.status(400).json({
+                    message: "Envie o id do jogo."
+                });
+            }
+
+            const updatedCarrinho = await Carrinho.findOneAndUpdate(
+                { usuario: id }, 
+                {
+                    $addToSet: {
+                        jogos: idjogo // O $addToSet adiciona ao array mantendo os anteriores e impede duplicados!
+                    }
+                },
+                { 
+                    returnDocument: 'after' // Atualizado para evitar avisos de depreciação do Mongoose
+                }
+            ).populate('jogos');
+
+            if (!updatedCarrinho) {
+                return res.status(404).json({
+                    message: 'Carrinho não encontrado para este usuário.'
+                });
+            }
+
+            return res.status(200).json({
+                message: 'Jogo adicionado ao carrinho com sucesso',
+                data: updatedCarrinho
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                message: 'Erro ao atualizar carrinho',
+                error: error.message
+            });
+        }
+    }
+
+    // Remove apenas o jogo específico de dentro do array de jogos do usuário (chamado após finalizar a compra)
+    static async removerJogo(req, res) {
     try {
-        const { id } = req.params;
-        const { idjogo } = req.body;
+        const { id } = req.params; // ID do Usuário
+        // Aceita o idjogo vindo do corpo ou dos parâmetros para não ter erro
+        const idjogo = req.body.idjogo || req.query.idjogo; 
+
+        console.log(`[Carrinho] Tentando remover o jogo ${idjogo} do usuário ${id}`);
 
         if (!idjogo) {
-            return res.status(400).json({
-                message: "Envie o id do jogo."
-            });
+            return res.status(400).json({ message: "Envie o id do jogo para remoção." });
         }
 
-        const updatedCarrinho = await Carrinho.findByIdAndUpdate(
-            id,
+        const updatedCarrinho = await Carrinho.findOneAndUpdate(
+            { usuario: id },
             {
-                $addToSet: {
-                    jogos: idjogo
-                }
+                $pull: { jogos: idjogo } // Remove o jogo específico do array
             },
-            { 
-                returnDocument: 'after' 
-            }
-        );
+            { returnDocument: 'after' }
+        ).populate('jogos');
 
         if (!updatedCarrinho) {
-            return res.status(404).json({
-                message: 'Carrinho não encontrada'
-            });
+            return res.status(404).json({ message: "Carrinho não encontrado para este usuário." });
         }
 
         return res.status(200).json({
-            message: 'Jogo adicionado à carrinho com sucesso',
+            message: "Jogo removido do carrinho com sucesso",
             data: updatedCarrinho
         });
-
     } catch (error) {
-        return res.status(500).json({
-            message: 'Erro ao atualizar carrinho',
-            error: error.message
-        });
+        console.error("Erro interno ao remover jogo:", error.message);
+        return res.status(500).json({ message: "Erro ao remover jogo do carrinho", error: error.message });
     }
 }
 
     static async delete(req, res) {
         try {
-            console.log("PARAMS:", req.params);
-            console.log("BODY:", req.body);
             const { id } = req.params;
             const deletedCarrinho = await Carrinho.findByIdAndDelete(id);
             

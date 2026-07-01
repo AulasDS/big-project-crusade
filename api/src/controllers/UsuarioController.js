@@ -1,4 +1,6 @@
 const Usuario = require('../models/Usuario');
+const Carrinho = require('../models/Carrinho'); // 💡 PASSO 1: Importar o modelo do Carrinho aqui no topo
+
 let Biblioteca;
 try {
     Biblioteca = require('../models/Biblioteca');
@@ -9,7 +11,6 @@ try {
 class UsuarioController {
     static async create(req, res) {
         try {
-            // 💡 AGORA PEGA TUDO: nome, email, senha, nascimento e foto
             const { nome, email, senha, nascimento, foto } = req.body;
             
             if (!nome || !email || !senha || !nascimento) {
@@ -20,13 +21,17 @@ class UsuarioController {
                 nome,
                 email,
                 senha,
-                nascimento, // 💡 SALVA NO BANCO
+                nascimento,
                 foto: foto || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${nome}`
             };
 
             const newUsuario = await Usuario.create(clienteData);
 
-            //criar carrinho desse user
+            // 💡 PASSO 2: Criar o carrinho automaticamente assim que o usuário é salvo no banco
+            await Carrinho.create({
+                usuario: newUsuario._id,
+                jogos: [] // Começa completamente vazio para o cliente adicionar itens depois
+            });
 
             return res.status(201).json({ message: 'Usuario criado com sucesso', data: newUsuario });
 
@@ -66,7 +71,7 @@ class UsuarioController {
             const updatedData = {
                 nome,
                 email,
-                nascimento, // 💡 PERMITE ATUALIZAR A DATA SE PRECISAR
+                nascimento,
                 foto
             };
             
@@ -75,7 +80,7 @@ class UsuarioController {
             if (!updatedUsuario) {
                 return res.status(404).json({ message: 'Usuario não encontrado' });
             }
-            return res.status(200).json({ message: 'Usuario atualizado com sucesso', data: updatedUsuario });
+            return res.status(200).json({ message: 'Usuario updated com sucesso', data: updatedUsuario });
         } catch (error) {
             return res.status(500).json({ message: 'Erro ao atualizar cliente', error: error.message });
         }
@@ -125,7 +130,7 @@ class UsuarioController {
                 id: usuario._id,
                 nome: usuario.nome,
                 email: usuario.email,
-                nascimento: usuario.nascimento, // 💡 RETORNA NO LOGIN TAMBÉM
+                nascimento: usuario.nascimento,
                 foto: usuario.foto || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${usuario.nome}`,
                 jogos: jogosDoUsuario 
             });

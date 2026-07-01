@@ -22,6 +22,9 @@ h2 {
 }
 
 .featuredCard {
+  display: block;
+  text-decoration: none;
+  color: inherit;
   background: #2a475e;
   border-radius: 4px;
   overflow: hidden;
@@ -57,9 +60,13 @@ h2 {
 }
 
 .gameCard {
+  display: block;
+  text-decoration: none;
+  color: inherit;
   background: #2a475e;
   border-radius: 4px;
   overflow: hidden;
+  cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
@@ -119,19 +126,18 @@ h2 {
   font-size: 13px;
   margin-bottom: 6px;
 }
-// Alinhador horizontal para colocar preço de um lado e botão do outro
+
 .priceRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-top: auto; // Empurra para a base do card
+  margin-top: auto;
   gap: 10px;
 }
 
-// O botão estilizado com as cores da Steam!
 .steamCartBtn {
-  background: linear-gradient(to right, #6ba31e 0%, #4c7814 100%); // Verde clássico de compra da Steam
+  background: linear-gradient(to right, #6ba31e 0%, #4c7814 100%);
   color: #ffffff;
   border: none;
   border-radius: 3px;
@@ -147,7 +153,7 @@ h2 {
   transition: all 0.2s ease-in-out;
 
   &:hover {
-    background: linear-gradient(to right, #82c724 0%, #5b8f18 100%); // Brilho suave no hover
+    background: linear-gradient(to right, #82c724 0%, #5b8f18 100%);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
   }

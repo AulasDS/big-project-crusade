@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"; 
 import axios from "axios";
 import styles from "./style.module.scss";
+import { Link } from "react-router-dom";
 
 interface Game {
   id?: number;
@@ -12,26 +13,21 @@ interface Game {
   rating: string;
   image: string;     
   tags: string[];    
-  jaPossui?: boolean; // Nova propriedade para controlar o aviso de posse
+  jaPossui?: boolean;
 }
 
 export default function Loja() {
   const [hovered, setHovered] = useState<string | number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Estados originais para guardar o que veio do banco
   const [todosJogosFiltrados, setTodosJogosFiltrados] = useState<Game[]>([]);
-
-  // Guarda a categoria selecionada (null significa "Todos")
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
 
-  // Estados das seções da vitrine
   const [featuredGames, setFeaturedGames] = useState<Game[]>([]);
   const [topSellers, setTopSellers] = useState<Game[]>([]);
   const [discountGames, setDiscountGames] = useState<Game[]>([]);
   const [recommendedGames, setRecommendedGames] = useState<Game[]>([]);
 
-  // Lista de categorias fixas para os botões do filtro
   const categorias = ["Todos", "RPG", "Ação", "FPS", "Mundo Aberto", "Estratégia", "Competitivo"];
 
   useEffect(() => {
@@ -43,13 +39,13 @@ export default function Loja() {
         if (dadosLocais) {
           const usuario = JSON.parse(dadosLocais);
           const idUsuarioReal = usuario.id || usuario._id;
-          
+
           try {
             const respostaBiblioteca = await axios.get(`http://localhost:3000/biblioteca/${idUsuarioReal}`);
             const biblioteca = respostaBiblioteca.data;
-            
+
             if (biblioteca && biblioteca.data && Array.isArray(biblioteca.data.jogos)) {
-              idsJogosBiblioteca = biblioteca.data.jogos.map((itemDoJogo: any) => 
+              idsJogosBiblioteca = biblioteca.data.jogos.map((itemDoJogo: any) =>
                 String(itemDoJogo._id || itemDoJogo.id || itemDoJogo)
               );
             }
@@ -66,7 +62,6 @@ export default function Loja() {
         }
 
         if (Array.isArray(jogosDoBanco)) {
-          // Remove duplicatas de IDs vindas do banco de dados para evitar repetições visuais
           const mapaJogosUnicos = new Map();
           jogosDoBanco.forEach((item: any) => {
             const idReal = String(item._id || item.id);
@@ -81,11 +76,11 @@ export default function Loja() {
             return {
               _id: item._id,
               id: item.id,
-              title: item.titulo, 
-              price: typeof item.preco === 'number' ? `R$ ${item.preco.toFixed(2).replace('.', ',')}` : item.preco, 
-              image: item.cover,  
-              rating: "Muito Positivo", 
-              tags: item.genero ? item.genero.split('/').map((t: string) => t.trim()) : ["Jogo"], 
+              title: item.titulo,
+              price: typeof item.preco === 'number' ? `R$ ${item.preco.toFixed(2).replace('.', ',')}` : item.preco,
+              image: item.cover,
+              rating: "Muito Positivo",
+              tags: item.genero ? item.genero.split('/').map((t: string) => t.trim()) : ["Jogo"],
               discount: item.discount,
               jaPossui: idsJogosBiblioteca.includes(idDoJogo)
             };
@@ -105,12 +100,12 @@ export default function Loja() {
   }, []);
 
   const distribuirJogosNasSecoes = (listaDeJogos: Game[]) => {
-    setFeaturedGames(listaDeJogos.slice(0, 4)); 
+    setFeaturedGames(listaDeJogos.slice(0, 4));
     setTopSellers(listaDeJogos.length > 4 ? listaDeJogos.slice(4, 8) : listaDeJogos);
-    
+
     const comDesconto = listaDeJogos.filter(g => g.discount && g.discount > 0);
-    setDiscountGames(comDesconto.length > 0 ? comDesconto : listaDeJogos.slice(0, 4)); 
-    
+    setDiscountGames(comDesconto.length > 0 ? comDesconto : listaDeJogos.slice(0, 4));
+
     setRecommendedGames(listaDeJogos.length > 6 ? listaDeJogos.slice(6, 12) : listaDeJogos.slice(0, 6));
   };
 
@@ -120,14 +115,13 @@ export default function Loja() {
       distribuirJogosNasSecoes(todosJogosFiltrados);
     } else {
       setCategoriaSelecionada(categoria);
-      const jogosFiltradosPorGenero = todosJogosFiltrados.filter(jogo => 
+      const jogosFiltradosPorGenero = todosJogosFiltrados.filter(jogo =>
         jogo.tags.some(tag => tag.toLowerCase().includes(categoria.toLowerCase()))
       );
       distribuirJogosNasSecoes(jogosFiltradosPorGenero);
     }
   };
 
-  // 🌟 FUNÇÃO AJUSTADA COM AS CHAVES CORRETAS: iduser e idjogo
   async function adicionarAoCarrinho(jogo: Game) {
     if (jogo.jaPossui) return;
 
@@ -139,22 +133,19 @@ export default function Loja() {
       }
 
       const usuario = JSON.parse(dadosLocais);
-      
-      const idJogoReal = jogo._id || jogo.id; 
-      const idUsuarioReal = usuario.id || usuario._id; 
+
+      const idJogoReal = jogo._id || jogo.id;
+      const idUsuarioReal = usuario.id || usuario._id;
 
       if (!idUsuarioReal || !idJogoReal) {
         alert("Erro interno ao identificar usuário ou jogo.");
         return;
       }
 
-      // 🎯 Chaves mapeadas exatamente como o seu backend pediu:
-      const novoItemCarrinho = {
-        iduser: idUsuarioReal,
+      await axios.put(`http://localhost:3000/carrinho/${idUsuarioReal}`, {
         idjogo: idJogoReal
-      };
+      });
 
-      await axios.post("http://localhost:3000/carrinho", novoItemCarrinho);
       alert(`${jogo.title} foi adicionado ao seu carrinho!`);
     } catch (error: any) {
       console.error("====== 🔍 RELATÓRIO DE ERRO DO CARRINHO ======");
@@ -174,7 +165,7 @@ export default function Loja() {
 
   return (
     <div className={styles.storeContainer}>
-      
+
       {/* MENU DE FILTROS POR CATEGORIA */}
       <div className={styles.filterContainer} style={{ display: 'flex', gap: '10px', padding: '20px 0', justifyContent: 'center' }}>
         {categorias.map((cat) => (
@@ -206,33 +197,43 @@ export default function Loja() {
                 {featuredGames.map((game) => {
                   const gameId = game._id || game.id || '';
                   return (
-                    <div key={gameId} className={styles.featuredCard}
+                    <Link
+                      to={`/loja/jogo/${gameId}`}
+                      key={gameId}
+                      className={styles.featuredCard}
                       onMouseEnter={() => setHovered(gameId)}
-                      onMouseLeave={() => setHovered(null)}>
+                      onMouseLeave={() => setHovered(null)}
+                    >
                       <img src={game.image} alt={game.title} />
                       <div className={styles.gameInfo}>
                         <h3>{game.title}</h3>
                         <div className={styles.tags}>{game.tags?.join(" • ")}</div>
                         {game.discount && !game.jaPossui && <div className={styles.discount}>-{game.discount}%</div>}
-                        
+
                         <div className={styles.priceRow}>
                           <div className={styles.price} style={{ opacity: game.jaPossui ? 0.5 : 1 }}>
                             {game.oldPrice && <s>{game.oldPrice}</s>}
                             <span>{game.price}</span>
                           </div>
-                          
+
                           {game.jaPossui ? (
                             <span style={{ backgroundColor: '#2f4153', color: '#66c0f4', padding: '4px 8px', borderRadius: '2px', fontSize: '0.8rem', fontWeight: 'bold' }}>
                               NA BIBLIOTECA
                             </span>
                           ) : (
-                            <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                adicionarAoCarrinho(game);
+                              }}
+                              className={styles.steamCartBtn}
+                            >
                               🛒+
                             </button>
                           )}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -245,7 +246,7 @@ export default function Loja() {
                   {topSellers.map(game => {
                     const gameId = game._id || game.id || '';
                     return (
-                      <div key={gameId} className={styles.gameCard}>
+                      <Link to={`/loja/jogo/${gameId}`} key={gameId} className={styles.gameCard}>
                         <img src={game.image} alt={game.title} />
                         <div className={styles.gameInfo}>
                           <h4>{game.title}</h4>
@@ -254,11 +255,19 @@ export default function Loja() {
                             {game.jaPossui ? (
                               <span style={{ color: '#66c0f4', fontSize: '0.8rem', fontWeight: 'bold' }}>NA BIBLIOTECA</span>
                             ) : (
-                              <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>🛒+</button>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  adicionarAoCarrinho(game);
+                                }}
+                                className={styles.steamCartBtn}
+                              >
+                                🛒+
+                              </button>
                             )}
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>
@@ -272,7 +281,7 @@ export default function Loja() {
                   {discountGames.map(game => {
                     const gameId = game._id || game.id || '';
                     return (
-                      <div key={gameId} className={styles.gameCard}>
+                      <Link to={`/loja/jogo/${gameId}`} key={gameId} className={styles.gameCard}>
                         <img src={game.image} alt={game.title} />
                         <div className={styles.gameInfo}>
                           <h4>{game.title}</h4>
@@ -285,11 +294,19 @@ export default function Loja() {
                             {game.jaPossui ? (
                               <span style={{ color: '#66c0f4', fontSize: '0.8rem', fontWeight: 'bold' }}>NA BIBLIOTECA</span>
                             ) : (
-                              <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>🛒+</button>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  adicionarAoCarrinho(game);
+                                }}
+                                className={styles.steamCartBtn}
+                              >
+                                🛒+
+                              </button>
                             )}
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>
@@ -303,7 +320,7 @@ export default function Loja() {
                   {recommendedGames.map(game => {
                     const gameId = game._id || game.id || '';
                     return (
-                      <div key={gameId} className={styles.gameCard}>
+                      <Link to={`/loja/jogo/${gameId}`} key={gameId} className={styles.gameCard}>
                         <img src={game.image} alt={game.title} />
                         <div className={styles.gameInfo}>
                           <h4>{game.title}</h4>
@@ -313,11 +330,19 @@ export default function Loja() {
                             {game.jaPossui ? (
                               <span style={{ color: '#66c0f4', fontSize: '0.8rem', fontWeight: 'bold' }}>NA BIBLIOTECA</span>
                             ) : (
-                              <button onClick={() => adicionarAoCarrinho(game)} className={styles.steamCartBtn}>🛒+</button>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  adicionarAoCarrinho(game);
+                                }}
+                                className={styles.steamCartBtn}
+                              >
+                                🛒+
+                              </button>
                             )}
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>
